@@ -1,6 +1,5 @@
 package com.tutorial.romanconverter.controller;
 
-
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.tutorial.romanconverter.dto.RequestDTO;
 import com.tutorial.romanconverter.model.RomanConverter;
 
-
+import java.util.regex.Pattern;
 
 @Controller
 public class RomanConverterController {
+
+    private static final Pattern ROMAN_NUMERAL_PATTERN = Pattern.compile("^[MDCLXVI]+$");
 
     @GetMapping(value = "/")
     public String home(Model model) {
@@ -28,13 +29,23 @@ public class RomanConverterController {
         return "view-conversion-result.html";
     }
 
+    private boolean isValidRomanNumeral(String roman) {
+        return ROMAN_NUMERAL_PATTERN.matcher(roman).matches();
+    }
+
     @GetMapping(value = "/roman-converter/{roman}")
     public String romanConverterWithPathVariable(@PathVariable(value = "roman") String roman, Model model) {
+        if (!roman.equals(roman.toUpperCase()) || !isValidRomanNumeral(roman)) {
+            return "view-wrong-input.html";
+        }
         return getRomanConverterPage(roman, model);
     }
 
     @GetMapping(value = "/roman-converter")
     public String romanConverterWithReqParam(@RequestParam(value = "roman") String roman, Model model) {
+        if (!roman.equals(roman.toUpperCase()) || !isValidRomanNumeral(roman)) {
+            return "view-wrong-input.html";
+        }
         return getRomanConverterPage(roman, model);
     }
     
@@ -45,14 +56,21 @@ public class RomanConverterController {
         return "form.html";
     }
 
+    @GetMapping(value = "/about-me")
+    public String AboutMe(Model model) {
+        return "view-about-me.html";
+    }
 
     @PostMapping(value = "/convert")
     public String postRomanConverterWithView(
         @ModelAttribute RequestDTO requestDTO, Model model
     ) {
         String romanFromView = requestDTO.getRoman();
+        // If input is not uppercase or invalid, redirect to error page
+        if (!romanFromView.equals(romanFromView.toUpperCase()) || !isValidRomanNumeral(romanFromView)) {
+            return "view-wrong-input.html";
+        }
         return getRomanConverterPage(romanFromView, model);
     }
 
 }
-
