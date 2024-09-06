@@ -7,28 +7,23 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import com.tutorial.romanconverter.dto.IntegerRequestDTO;
-import com.tutorial.romanconverter.dto.RequestDTO;
 import com.tutorial.romanconverter.model.IntegerConverter;
-import com.tutorial.romanconverter.model.RomanConverter;
 
 @Controller
 public class IntegerConverterController {
 
     @GetMapping(value = "/convert-integer")
     public String getIntegerConverterForm(Model model) {
-        // Initialize the form with IntegerRequestDTO object
         model.addAttribute("integerRequestDTO", new IntegerRequestDTO());
-        return "form-integer-converter.html"; // This is the form page for integer conversion
+        return "form-integer-converter.html"; 
     }
 
     @PostMapping(value = "/convert-integer")
     public String postIntegerConverterForm(
             @ModelAttribute IntegerRequestDTO integerRequestDTO, Model model) {
 
-        // Get the integer from the form
         int number = Integer.parseInt(integerRequestDTO.getInteger());
 
-        // Convert the integer to Roman numeral
         IntegerConverter integerConverter = new IntegerConverter(number);
         model.addAttribute("integerConverter", integerConverter);
 
