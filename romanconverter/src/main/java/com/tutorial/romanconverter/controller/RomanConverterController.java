@@ -58,6 +58,15 @@ public class RomanConverterController {
 
     @GetMapping(value = "/about-me")
     public String AboutMe(Model model) {
+        String nama = "Clement";
+        String npm = "2206082114";
+        String usia = "20";
+        String kelas = "APAP A";
+        model.addAttribute("nama", nama);
+        model.addAttribute("npm", npm);
+        model.addAttribute("usia", usia);
+        model.addAttribute("kelas", kelas);
+        
         return "view-about-me.html";
     }
 
