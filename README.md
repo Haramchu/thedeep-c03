@@ -4,6 +4,10 @@
 
 * **Clement Samuel Marly** - *2206082114* - *A* 
 
+[Tutorial 1](#Tutorial-1)
+
+[Tutorial 2](#Tutorial-2)
+
 ---
 ## Tutorial 1
 ### Apa yang telah saya pelajari hari ini
@@ -139,8 +143,15 @@ Spring akan mengembalikan view view-conversion-result.html yang menampilkan hasi
 
     Error 404 (Not Found) dalam konteks aplikasi Spring Boot biasanya terjadi ketika Spring tidak dapat menemukan resource yang diminta oleh pengguna. Hal ini dikarenakan belum adanya resource yang sesuai di project (template html belum ada pada bagian bagian Spring Boot > VS Code / IDE > langkah 4).
 
+---
+
+## Tutorial 2
+
 ### Apa yang belum saya pahami
 (tuliskan apa saja yang kurang Anda mengerti, Anda dapat mencentang apabila Anda sudah mengerti dikemudian hari, dan tambahkan tulisan yang membuat Anda mengerti)
 - [ ] Kenapa saya menggunakan Lombok? 
 - [ ] Cara testing ?
-- [ ] Apakah if else di html itu optimal?
+- [x] Apakah if else di html itu optimal?
+   Bisa, tetapi lebih baik apabila tidak ada.
+- [x] Apakah merge request harus diperbarui setiap push baru?
+   Push ke dalam branch yang ingin di merge secara otomatis masuk ke dalam merge request.

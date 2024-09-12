@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import apap.tutorial.manpro.manpro.model.Proyek;
+import apap.tutorial.manpromanpro.model.Proyek;
 
 @Service
 public class ProyekServiceImpl implements ProyekService {
@@ -24,9 +24,8 @@ public class ProyekServiceImpl implements ProyekService {
 
     @Override
     public Proyek getProyekById(UUID id){
-        List<Proyek> listProyek = getAllProyek();
-        for (Proyek proyek: listProyek){
-            if (proyek.getId() == id){
+        for (Proyek proyek : listProyek){
+            if (proyek.getId().equals(id)){
                 return proyek;
             }
         }

@@ -1,14 +1,14 @@
 package apap.tutorial.manpromanpro.service;
 
 import java.util.List;
-import java.uitl.UUID;
+import java.util.UUID;
 
-import apap.tutorial.manpromanpro.Proyek;
+import apap.tutorial.manpromanpro.model.Proyek;
 
 public interface ProyekService {
-    Void CreateProyek (Proyek proyek);
+    void createProyek (Proyek proyek);
 
-    List<Proyek> getallProyek();
+    List<Proyek> getAllProyek();
 
-    Proyek getProyekByID(UUID id);
+    Proyek getProyekById(UUID id);
 }
