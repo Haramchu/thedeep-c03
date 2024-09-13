@@ -80,9 +80,26 @@ public class ProyekController {
         return "form-update-proyek";
     }
 
-    @PostMapping("/proyek/{id}/update")
-    public String updateProyek(@PathVariable(value = "id") UUID id, @ModelAttribute ProyekDTO proyekDTO, Model model) {
-        Proyek existingProyek = proyekService.getProyekById(id);
+    // @PostMapping("/proyek/{id}/update")
+    // public String updateProyek(@PathVariable(value = "id") UUID id,
+    // @ModelAttribute ProyekDTO proyekDTO, Model model) {
+    // Proyek existingProyek = proyekService.getProyekById(id);
+
+    // existingProyek.setNama(proyekDTO.getNama());
+    // existingProyek.setTanggalMulai(proyekDTO.getTanggalMulai());
+    // existingProyek.setTanggalSelesai(proyekDTO.getTanggalSelesai());
+    // existingProyek.setStatus(proyekDTO.getStatus());
+    // existingProyek.setDeveloper(proyekDTO.getDeveloper());
+
+    // model.addAttribute("id", existingProyek.getId());
+    // model.addAttribute("nama", existingProyek.getNama());
+
+    // return "success-update-proyek";
+    // }
+
+    @PostMapping("/proyek/update")
+    public String updateProyek(@ModelAttribute ProyekDTO proyekDTO, Model model) {
+        var existingProyek = proyekService.getProyekById(proyekDTO.getId());
 
         existingProyek.setNama(proyekDTO.getNama());
         existingProyek.setTanggalMulai(proyekDTO.getTanggalMulai());
@@ -94,5 +111,12 @@ public class ProyekController {
         model.addAttribute("nama", existingProyek.getNama());
 
         return "success-update-proyek";
+    }
+
+    @GetMapping(value = "/proyek/{id}/delete")
+    public String deleteProyek(@PathVariable(value = "id") UUID id, Model model) {
+        var proyek = proyekService.getProyekById(id);
+        model.addAttribute("proyek", proyek);
+        return "form-update-proyek";
     }
 }

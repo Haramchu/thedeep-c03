@@ -14,7 +14,8 @@
         <div class="card m-4 p-4">
             <div class="card-body">
                 <h2>Update Proyek</h2>
-                <form th:action="@{/proyek/{id}/update(id=${proyek.id})}" th:object="${proyek}" method="POST">
+                <form th:action="@{/proyek/update}" th:object="${proyek}" method="POST">
+                    <input type="hidden" th:field="*{id}" />
 
                     Nama Proyek: <br />
                     <input class="form-control" type="text" th:field="*{nama}" />
