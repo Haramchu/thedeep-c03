@@ -25,9 +25,9 @@
                         <p class="card-text m-0"><b>ID Proyek</b></p>
                         <p class="card-text" th:text="${proyek.id}"></p>
                         <p class="card-text m-0"><b>Tanggal Mulai</b></p>
-                        <p class="card-text" th:text="${proyek.tanggalMulai}"></p>
+                        <p class="card-text" th:text="${#dates.format(proyek.tanggalMulai, 'dd MMMM yyyy')}"></p>
                         <p class="card-text m-0"><b>Tanggal Selesai</b></p>
-                        <p class="card-text" th:text="${proyek.tanggalSelesai}"></p>
+                        <p class="card-text" th:text="${#dates.format(proyek.tanggalSelesai, 'dd MMMM yyyy')}"></p>
                         <p class="card-text m-0"><b>Status Proyek</b></p>
                         <p class="card-text" th:text="${proyek.status}"></p>
                     </div>
