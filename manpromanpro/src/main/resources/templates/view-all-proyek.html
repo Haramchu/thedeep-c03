@@ -21,11 +21,17 @@
                         <div class="card-body">
                             <h5 th:text="${proyek.nama}" class="card-title"></h5>
                             <h6 th:text="'Developed by : ' + ${proyek.developer}" class="card-subtitle mb-2"></h6>
+                            <span th:if="${proyek.status} == 'On Going'"
+                                class="badge bg-warning text-dark position-absolute top-0 end-0 m-2">On Going</span>
+                            <span th:if="${proyek.status} == 'Finished'"
+                                class="badge bg-success text-white position-absolute top-0 end-0 m-2">Finished</span>
                             <a type="button" class="btn btn-md btn-primary"
                                 th:href="@{/proyek?id={idProyek}(idProyek=${proyek.id})}">Detail</a>
-                            <a type="button" class="btn btn-md btn-primary" style="background-color: #FFB833; color: black; border: none;"
+                            <a type="button" class="btn btn-md btn-primary"
+                                style="background-color: #FFB833; color: black; border: none;"
                                 th:href="@{/proyek/{id}/update(id=${proyek.id})}">Ubah</a>
-                            <a type="button" class="btn btn-md btn-primary" style="background-color: #FF3933; color: white; border: none;"
+                            <a type="button" class="btn btn-md btn-primary"
+                                style="background-color: #FF3933; color: white; border: none;"
                                 th:href="@{/proyek/{id}/delete(id=${proyek.id})}">Hapus</a>
                         </div>
                     </div>

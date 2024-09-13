@@ -38,16 +38,14 @@ public class ProyekController {
 
     @PostMapping("/proyek/add")
     public String addProyek(@ModelAttribute ProyekDTO proyekDTO, Model model) {
-
+        if (proyekDTO.getTanggalMulai().after(proyekDTO.getTanggalSelesai())) {
+            return "wrong-date-input"; 
+        }
         UUID idProyek = UUID.randomUUID();
-
         var proyek = new Proyek(idProyek, proyekDTO.getNama(), proyekDTO.getTanggalMulai(),
                 proyekDTO.getTanggalSelesai(), proyekDTO.getStatus(), proyekDTO.getDeveloper());
-
         proyekService.createProyek(proyek);
-
         model.addAttribute("id", proyek.getId());
-
         model.addAttribute("Nama", proyek.getNama());
 
         return "success-add-proyek";
@@ -82,6 +80,9 @@ public class ProyekController {
 
     @PostMapping("/proyek/update")
     public String updateProyek(@ModelAttribute ProyekDTO proyekDTO, Model model) {
+        if (proyekDTO.getTanggalMulai().after(proyekDTO.getTanggalSelesai())) {
+            return "wrong-date-input"; 
+        }
         var existingProyek = proyekService.getProyekById(proyekDTO.getId());
 
         existingProyek.setNama(proyekDTO.getNama());
@@ -102,9 +103,7 @@ public class ProyekController {
 
         if (proyek != null) {
             proyekService.deleteProyek(id);
-            model.addAttribute("message", "Proyek berhasil dihapus.");
         } else {
-            model.addAttribute("error", "Proyek tidak ditemukan.");
         }
 
         return "success-delete-proyek";
