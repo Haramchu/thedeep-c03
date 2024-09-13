@@ -11,4 +11,6 @@ public interface ProyekService {
     List<Proyek> getAllProyek();
 
     Proyek getProyekById(UUID id);
+
+    void deleteProyek (UUID id);
 }

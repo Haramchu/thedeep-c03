@@ -80,23 +80,6 @@ public class ProyekController {
         return "form-update-proyek";
     }
 
-    // @PostMapping("/proyek/{id}/update")
-    // public String updateProyek(@PathVariable(value = "id") UUID id,
-    // @ModelAttribute ProyekDTO proyekDTO, Model model) {
-    // Proyek existingProyek = proyekService.getProyekById(id);
-
-    // existingProyek.setNama(proyekDTO.getNama());
-    // existingProyek.setTanggalMulai(proyekDTO.getTanggalMulai());
-    // existingProyek.setTanggalSelesai(proyekDTO.getTanggalSelesai());
-    // existingProyek.setStatus(proyekDTO.getStatus());
-    // existingProyek.setDeveloper(proyekDTO.getDeveloper());
-
-    // model.addAttribute("id", existingProyek.getId());
-    // model.addAttribute("nama", existingProyek.getNama());
-
-    // return "success-update-proyek";
-    // }
-
     @PostMapping("/proyek/update")
     public String updateProyek(@ModelAttribute ProyekDTO proyekDTO, Model model) {
         var existingProyek = proyekService.getProyekById(proyekDTO.getId());
@@ -115,8 +98,15 @@ public class ProyekController {
 
     @GetMapping(value = "/proyek/{id}/delete")
     public String deleteProyek(@PathVariable(value = "id") UUID id, Model model) {
-        var proyek = proyekService.getProyekById(id);
-        model.addAttribute("proyek", proyek);
-        return "form-update-proyek";
+        Proyek proyek = proyekService.getProyekById(id);
+
+        if (proyek != null) {
+            proyekService.deleteProyek(id);
+            model.addAttribute("message", "Proyek berhasil dihapus.");
+        } else {
+            model.addAttribute("error", "Proyek tidak ditemukan.");
+        }
+
+        return "success-delete-proyek";
     }
 }

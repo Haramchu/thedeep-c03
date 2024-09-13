@@ -31,4 +31,9 @@ public class ProyekServiceImpl implements ProyekService {
         }
         return null;
     }
+
+    @Override
+    public void deleteProyek(UUID id) {
+        listProyek.removeIf(proyek -> proyek.getId().equals(id));
+    }
 }
