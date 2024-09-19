@@ -1,31 +1,33 @@
 package apap.tutorial.manpromanpro.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import apap.tutorial.manpromanpro.repository.ProyekDb;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import apap.tutorial.manpromanpro.model.Proyek;
 
 @Service
 public class ProyekServiceImpl implements ProyekService {
-    private List<Proyek> listProyek = new ArrayList<Proyek>();
+    @Autowired
+    ProyekDb proyekDb;
 
     @Override
-    public void createProyek(Proyek proyek) {
-        listProyek.add(proyek);
+    public Proyek addProyek(Proyek proyek) {
+        return proyekDb.save(proyek);
     }
 
     @Override
     public List<Proyek> getAllProyek() {
-        return listProyek;
+        return proyekDb.findAll();
     }
 
     @Override
-    public Proyek getProyekById(UUID id){
-        for (Proyek proyek : listProyek){
-            if (proyek.getId().equals(id)){
+    public Proyek getProyekById(UUID idProyek) {
+        for (Proyek proyek : getAllProyek()) {
+            if (proyek.getId().equals(idProyek)) {
                 return proyek;
             }
         }
@@ -33,7 +35,26 @@ public class ProyekServiceImpl implements ProyekService {
     }
 
     @Override
-    public void deleteProyek(UUID id) {
-        listProyek.removeIf(proyek -> proyek.getId().equals(id));
+    public Proyek updateProyek(Proyek proyek) {
+        Proyek getProyek = getProyekById(proyek.getId());
+        if (getProyek != null) {
+            getProyek.setNama(proyek.getNama());
+            getProyek.setDeskripsi(proyek.getDeskripsi());
+            getProyek.setTanggalMulai(proyek.getTanggalMulai());
+            getProyek.setTanggalSelesai(proyek.getTanggalSelesai());
+            getProyek.setStatus(proyek.getStatus());
+            getProyek.setDeveloper(proyek.getDeveloper());
+            proyekDb.save(getProyek);
+
+            return getProyek;
+        }
+
+        return null;
     }
+
+    @Override
+    public void deleteProyek(Proyek proyek) {
+        proyekDb.delete(proyek);
+    }
+
 }
