@@ -12,15 +12,25 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import apap.tutorial.manpromanpro.dto.request.AddProyekRequestDTO;
+import apap.tutorial.manpromanpro.dto.request.UpdateProyekRequestDTO;
 import apap.tutorial.manpromanpro.model.Proyek;
+import apap.tutorial.manpromanpro.service.DeveloperService;
 import apap.tutorial.manpromanpro.service.ProyekService;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class ProyekController {
-
+    
     @Autowired
     private ProyekService proyekService;
+
+    @Autowired
+    private DeveloperService developerService;
+
+    enum StatusLevel {
+        STARTED,
+        ONGOING,
+        FINISHED,
+    }
 
     @GetMapping("/")
     private String home() {
@@ -29,41 +39,47 @@ public class ProyekController {
 
     @GetMapping("/proyek/add")
     public String addProyekForm(Model model) {
+
         var proyekDTO = new AddProyekRequestDTO();
+        var listDeveloper = developerService.getAllDeveloper();
 
         model.addAttribute("proyekDTO", proyekDTO);
+        model.addAttribute("listDeveloper", developerService.getAllDeveloper());
+        model.addAttribute("statusLevel", StatusLevel.values());
+        model.addAttribute("listDeveloper", listDeveloper);
 
         return "form-add-proyek";
     }
 
     @PostMapping("/proyek/add")
     public String addProyek(@ModelAttribute AddProyekRequestDTO proyekDTO, Model model) {
-        if (proyekDTO.getTanggalMulai().after(proyekDTO.getTanggalSelesai())) {
-            return "wrong-date-input"; 
-        }
-        UUID idProyek = UUID.randomUUID();
-        var proyek = new Proyek(idProyek, proyekDTO.getNama(), proyekDTO.getTanggalMulai(),
-                proyekDTO.getTanggalSelesai(), proyekDTO.getStatus(), proyekDTO.getDeveloper());
-        proyekService.createProyek(proyek);
-        model.addAttribute("id", proyek.getId());
-        model.addAttribute("Nama", proyek.getNama());
+        var proyek = new Proyek();
+        proyek.setNama(proyekDTO.getNama());
+        proyek.setDeskripsi(proyekDTO.getDeskripsi());
+        proyek.setTanggalMulai(proyekDTO.getTanggalMulai());
+        proyek.setTanggalSelesai(proyekDTO.getTanggalSelesai());
+        proyek.setStatus(proyekDTO.getStatus());
+        proyek.setDeveloper(proyekDTO.getDeveloper());
 
-        return "success-add-proyek";
+        proyekService.addProyek(proyek);
+        
+        model.addAttribute("responseMessage",
+                String.format("Proyek %s dengan ID %s berhasil ditambahkan.", proyek.getNama(), proyek.getId()));
+
+        return "response-proyek";
     }
 
     @GetMapping("/proyek/viewall")
     public String listProyek(Model model) {
-
         List<Proyek> listProyek = proyekService.getAllProyek();
 
         model.addAttribute("listProyek", listProyek);
 
-        return "view-all-proyek";
+        return "viewall-proyek";
     }
 
-    @GetMapping("/proyek")
-    public String detailProyek(@RequestParam(value = "id") UUID id, Model model) {
-
+    @GetMapping("/proyek/{id}")
+    public String detailProyek(@PathVariable("id") UUID id, Model model) {
         var proyek = proyekService.getProyekById(id);
 
         model.addAttribute("proyek", proyek);
@@ -71,41 +87,54 @@ public class ProyekController {
         return "view-proyek";
     }
 
-    @GetMapping(value = "/proyek/{id}/update")
-    public String updateProyekForm(@PathVariable(value = "id") UUID id, Model model) {
+    @GetMapping("/proyek/{id}/update")
+    public String updateProyek(@PathVariable("id") UUID id, Model model) {
         var proyek = proyekService.getProyekById(id);
-        model.addAttribute("proyek", proyek);
+
+        var proyekDTO = new UpdateProyekRequestDTO();
+        proyekDTO.setId(proyek.getId());
+        proyekDTO.setNama(proyek.getNama());
+        proyekDTO.setDeskripsi(proyek.getDeskripsi());
+        proyekDTO.setTanggalMulai(proyek.getTanggalMulai());
+        proyekDTO.setTanggalSelesai(proyek.getTanggalSelesai());
+        proyekDTO.setStatus(proyek.getStatus());
+        proyekDTO.setDeveloper(proyek.getDeveloper());
+
+        model.addAttribute("proyekDTO", proyekDTO);
+        model.addAttribute("listDeveloper", developerService.getAllDeveloper());
+        model.addAttribute("statusLevel", StatusLevel.values());
+
         return "form-update-proyek";
     }
 
     @PostMapping("/proyek/update")
-    public String updateProyek(@ModelAttribute AddProyekRequestDTO proyekDTO, Model model) {
-        if (proyekDTO.getTanggalMulai().after(proyekDTO.getTanggalSelesai())) {
-            return "wrong-date-input"; 
-        }
-        var existingProyek = proyekService.getProyekById(proyekDTO.getId());
+    public String updateProyek(@ModelAttribute UpdateProyekRequestDTO proyekDTO, Model model) {
+        var proyekFromDTO = new Proyek();
+        proyekFromDTO.setId(proyekDTO.getId());
+        proyekFromDTO.setNama(proyekDTO.getNama());
+        proyekFromDTO.setDeskripsi(proyekDTO.getDeskripsi());
+        proyekFromDTO.setTanggalMulai(proyekDTO.getTanggalMulai());
+        proyekFromDTO.setTanggalSelesai(proyekDTO.getTanggalSelesai());
+        proyekFromDTO.setStatus(proyekDTO.getStatus());
+        proyekFromDTO.setDeveloper(proyekDTO.getDeveloper());
 
-        existingProyek.setNama(proyekDTO.getNama());
-        existingProyek.setTanggalMulai(proyekDTO.getTanggalMulai());
-        existingProyek.setTanggalSelesai(proyekDTO.getTanggalSelesai());
-        existingProyek.setStatus(proyekDTO.getStatus());
-        existingProyek.setDeveloper(proyekDTO.getDeveloper());
+        var proyek = proyekService.updateProyek(proyekFromDTO);
 
-        model.addAttribute("id", existingProyek.getId());
-        model.addAttribute("nama", existingProyek.getNama());
+        model.addAttribute("responseMessage",
+                String.format("Proyek %s dengan ID %s berhasil diupdate.", proyek.getNama(), proyek.getId()));
 
-        return "success-update-proyek";
+        return "response-proyek";
     }
 
-    @GetMapping(value = "/proyek/{id}/delete")
-    public String deleteProyek(@PathVariable(value = "id") UUID id, Model model) {
-        Proyek proyek = proyekService.getProyekById(id);
+    @GetMapping("/proyek/{id}/delete")
+    public String deleteProyek(@PathVariable("id") UUID id, Model model) {
+        var proyek = proyekService.getProyekById(id);
+        proyekService.deleteProyek(proyek);
 
-        if (proyek != null) {
-            proyekService.deleteProyek(id);
-        } else {
-        }
+        model.addAttribute("responseMessage",
+                String.format("Proyek %s dengan ID %s berhasil dihapus.", proyek.getNama(), proyek.getId()));
 
-        return "success-delete-proyek";
+        return "response-proyek";
     }
+
 }
