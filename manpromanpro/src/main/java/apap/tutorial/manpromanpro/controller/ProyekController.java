@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import apap.tutorial.manpromanpro.controller.DTO.ProyekDTO;
+import apap.tutorial.manpromanpro.dto.request.AddProyekRequestDTO;
 import apap.tutorial.manpromanpro.model.Proyek;
 import apap.tutorial.manpromanpro.service.ProyekService;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,7 +29,7 @@ public class ProyekController {
 
     @GetMapping("/proyek/add")
     public String addProyekForm(Model model) {
-        var proyekDTO = new ProyekDTO();
+        var proyekDTO = new AddProyekRequestDTO();
 
         model.addAttribute("proyekDTO", proyekDTO);
 
@@ -37,7 +37,7 @@ public class ProyekController {
     }
 
     @PostMapping("/proyek/add")
-    public String addProyek(@ModelAttribute ProyekDTO proyekDTO, Model model) {
+    public String addProyek(@ModelAttribute AddProyekRequestDTO proyekDTO, Model model) {
         if (proyekDTO.getTanggalMulai().after(proyekDTO.getTanggalSelesai())) {
             return "wrong-date-input"; 
         }
@@ -79,7 +79,7 @@ public class ProyekController {
     }
 
     @PostMapping("/proyek/update")
-    public String updateProyek(@ModelAttribute ProyekDTO proyekDTO, Model model) {
+    public String updateProyek(@ModelAttribute AddProyekRequestDTO proyekDTO, Model model) {
         if (proyekDTO.getTanggalMulai().after(proyekDTO.getTanggalSelesai())) {
             return "wrong-date-input"; 
         }
