@@ -7,9 +7,9 @@ import java.util.UUID;
 
 import apap.tutorial.manpromanpro.repository.ProyekDb;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import apap.tutorial.manpromanpro.model.Order;
 import apap.tutorial.manpromanpro.model.Proyek;
 
 @Service
@@ -64,12 +64,15 @@ public class ProyekServiceImpl implements ProyekService {
     }
 
     @Override
-    public List<Proyek> getAllProyekSorted(Order order) {
-        if (order.isAscending()) {
-            return proyekDb.findAllSortedByNameAsc();
+    public List<Proyek> getAllProyek(String nama, String status, Sort sort) {
+        if (!nama.isEmpty() && !status.isEmpty()) {
+            return proyekDb.findByNamaIgnoreCaseContainingAndStatusIgnoreCaseAndDeletedAtIsNull(nama, status, sort);
+        } else if (!nama.isEmpty()) {
+            return proyekDb.findByNamaIgnoreCaseContainingAndDeletedAtIsNull(nama, sort);
+        } else if (!status.isEmpty()) {
+            return proyekDb.findByStatusIgnoreCaseAndDeletedAtIsNull(status, sort);
         } else {
-            return proyekDb.findAllSortedByNameDesc();
+            return proyekDb.findAllByDeletedAtIsNull(sort);
         }
     }
-
 }
