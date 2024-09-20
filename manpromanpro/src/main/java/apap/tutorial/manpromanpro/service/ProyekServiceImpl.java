@@ -44,6 +44,7 @@ public class ProyekServiceImpl implements ProyekService {
             getProyek.setTanggalSelesai(proyek.getTanggalSelesai());
             getProyek.setStatus(proyek.getStatus());
             getProyek.setDeveloper(proyek.getDeveloper());
+            getProyek.setUpdatedAt(proyek.getUpdatedAt());
             proyekDb.save(getProyek);
 
             return getProyek;

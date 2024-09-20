@@ -4,15 +4,19 @@
 
 * **Clement Samuel Marly** - *2206082114* - *A* 
 
-[Tutorial 1](#Tutorial-1)
+[Tutorial 1](#tutorial-1)
 
-[Tutorial 2](#Tutorial-2)
+[Tutorial 2](#tutorial-2)
+
+[Tutorial 3](#tutorial-3)
 
 ---
 ## Tutorial 1
 ### Apa yang telah saya pelajari hari ini
 1. Hal pertama yang saya pelajari adalah cara kerja gitlab itu sendiri. Meskipun tidak berbeda jauh dengan github, tetapi di dalam tutorial diajarkan cara menggunakan gitlab yang lebih terstruktur dengan bagian administrasi yang lebih detil.
 2. Cara kerja *framework* Springboot dengan strukturnya yang *Model-View-Controller*. Berbeda dengan Django, *framework* Springboot menggunakan bahasa java dan memiliki struktur yang berbeda.
+
+### Pertanyaan
 
 ### GitLab
 1. **Apa itu Issue Tracker? Apa saja masalah yang dapat diselesaikan dengan Issue Tracker?**
@@ -317,8 +321,28 @@ Elemen `<div>` hanya akan ditampilkan jika status proyek adalah "Finished" atau 
 
 Sumber: [Thymeleaf: Thymeleaf Tutorial](https://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html)
 
+---
+
+## Tutorial 3
+### Apa yang telah saya pelajari hari ini
+1. Fungsi Lombok sebagai sebuah library untuk getter, setter, dan lainnya.
+2. Cara menghubungkan database dengan proyek melalui docker dan melihatnya melalui dbeaver.
+
+### Pertanyaan
+1. **Jelaskan seluruh configuration properties (application, datasource, jpa) yang terdapat di dalam file application.yml!**
+2. **Pada tutorial ini, kita menggunakan docker container untuk membentuk database. Apa keuntungan menggunakan docker container dibandingkan tanpa menggunakannya?**
+3. **Jelaskan secara singkat apa itu dan kegunaan dari annotation dibawah ini
+(@Entity, @Table, @Column)**
+4. **Pada model, kita dapat menentukan relasi antarmodel dengan menggunakan JPA Annotation. Sebutkan seluruh JPA Annotation yang dapat digunakan untuk mendefinisikan relasi antarmodel beserta perbedaannya!**
+5. **Pada model Proyek, terdapat annotation @JoinTable seperti berikut**
+![image2](tutorial-3-image1.png)
+**Jelaskan kegunaan annotation tersebut beserta seluruh parameternya!**
+6. **Jelaskan mengapa kita harus membentuk JPA Repository!
+Sebutkan beberapa alternatif dari Java Faker!**
+
 ### Apa yang belum saya pahami
-- [ ] Kenapa saya menggunakan Lombok? 
+- [x] Kenapa saya menggunakan Lombok? 
+   Untuk menggunakan berbagai metode dari library Lombok tanpa harus membuat kode berlebih.
 - [ ] Cara testing ?
 - [x] Apakah if else di html itu optimal?
    Bisa, tetapi lebih baik apabila tidak ada.

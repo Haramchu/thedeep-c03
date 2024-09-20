@@ -16,6 +16,8 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.AllArgsConstructor;
@@ -52,6 +54,14 @@ public class Proyek {
     @NotNull
     @Column(name = "tanggal_selesai", columnDefinition = "DATE", nullable = false)
     private Date tanggalSelesai;
+
+    @CreationTimestamp
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    private Date createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "update_at", columnDefinition = "TIMESTAMP")
+    private Date updatedAt;
 
     @NotNull
     @Size(max = 30)

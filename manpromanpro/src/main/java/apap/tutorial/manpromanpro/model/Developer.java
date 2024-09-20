@@ -3,6 +3,9 @@ package apap.tutorial.manpromanpro.model;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,6 +45,14 @@ public class Developer {
     @NotNull
     @Column(name = "tanggal_berdiri", columnDefinition = "DATE", nullable = false)
     private Date tanggalBerdiri;
+
+    @CreationTimestamp
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
+    private Date createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "update_at", columnDefinition = "TIMESTAMP")
+    private Date updatedAt;
 
     @Size(max = 30)
     @NotNull
