@@ -9,6 +9,7 @@ import apap.tutorial.manpromanpro.repository.ProyekDb;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import apap.tutorial.manpromanpro.model.Order;
 import apap.tutorial.manpromanpro.model.Proyek;
 
 @Service
@@ -60,6 +61,15 @@ public class ProyekServiceImpl implements ProyekService {
     public void deleteProyek(Proyek proyek) {
         proyek.setDeletedAt(new Date());
         proyekDb.save(proyek);
+    }
+
+    @Override
+    public List<Proyek> getAllProyekSorted(Order order) {
+        if (order.isAscending()) {
+            return proyekDb.findAllSortedByNameAsc();
+        } else {
+            return proyekDb.findAllSortedByNameDesc();
+        }
     }
 
 }

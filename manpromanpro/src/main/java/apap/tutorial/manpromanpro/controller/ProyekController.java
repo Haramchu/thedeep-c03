@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import apap.tutorial.manpromanpro.dto.request.AddProyekRequestDTO;
 import apap.tutorial.manpromanpro.dto.request.UpdateProyekRequestDTO;
+import apap.tutorial.manpromanpro.model.Order;
 import apap.tutorial.manpromanpro.model.Proyek;
 import apap.tutorial.manpromanpro.service.DeveloperService;
 import apap.tutorial.manpromanpro.service.ProyekService;
@@ -70,11 +71,10 @@ public class ProyekController {
     }
 
     @GetMapping("/proyek/viewall")
-    public String listProyek(Model model) {
-        List<Proyek> listProyek = proyekService.getAllProyek();
-
+    public String viewAllProyek(Model model) {
+        Order order = new Order("nama", true);
+        List<Proyek> listProyek = proyekService.getAllProyekSorted(order);
         model.addAttribute("listProyek", listProyek);
-
         return "viewall-proyek";
     }
 
