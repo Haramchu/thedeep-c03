@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Where;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -60,5 +61,6 @@ public class Developer {
     private String email;
 
     @OneToMany(mappedBy = "developer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Where(clause = "deleted_at IS NULL") // Hanya menampilkan proyek yang belum dihapus
     private List<Proyek> listProyek;
 }

@@ -1,6 +1,8 @@
 package apap.tutorial.manpromanpro.service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import apap.tutorial.manpromanpro.repository.ProyekDb;
@@ -21,15 +23,16 @@ public class ProyekServiceImpl implements ProyekService {
 
     @Override
     public List<Proyek> getAllProyek() {
-        return proyekDb.findAll();
+        return proyekDb.findAll().stream()
+                .filter(proyek -> proyek.getDeletedAt() == null)
+                .toList();
     }
 
     @Override
     public Proyek getProyekById(UUID idProyek) {
-        for (Proyek proyek : getAllProyek()) {
-            if (proyek.getId().equals(idProyek)) {
-                return proyek;
-            }
+        Optional<Proyek> proyek = proyekDb.findById(idProyek);
+        if (proyek.isPresent() && proyek.get().getDeletedAt() == null) {
+            return proyek.get();
         }
         return null;
     }
@@ -55,7 +58,8 @@ public class ProyekServiceImpl implements ProyekService {
 
     @Override
     public void deleteProyek(Proyek proyek) {
-        proyekDb.delete(proyek);
+        proyek.setDeletedAt(new Date());
+        proyekDb.save(proyek);
     }
 
 }

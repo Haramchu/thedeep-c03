@@ -9,5 +9,5 @@ import apap.tutorial.manpromanpro.model.Proyek;
 
 @Repository
 public interface ProyekDb extends JpaRepository<Proyek, UUID> {
-
+    
 }

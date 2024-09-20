@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import apap.tutorial.manpromanpro.model.Developer;
+import apap.tutorial.manpromanpro.model.Proyek;
 import apap.tutorial.manpromanpro.repository.DeveloperDb;
 
 @Service
@@ -30,6 +31,23 @@ public class DeveloperServiceImpl implements DeveloperService {
                 return developer;
             }
         }
+        return null;
+    }
+
+    @Override
+    public Developer updateDeveloper(Developer developer) {
+        Developer getDeveloper = getDeveloperById(developer.getId());
+        if (getDeveloper != null) {
+            getDeveloper.setNama(developer.getNama());
+            getDeveloper.setAlamat(developer.getAlamat());
+            getDeveloper.setTanggalBerdiri(developer.getTanggalBerdiri());
+            getDeveloper.setEmail(developer.getEmail());
+            getDeveloper.setUpdatedAt(developer.getUpdatedAt());
+            developerDb.save(developer);
+
+            return getDeveloper;
+        }
+
         return null;
     }
 }

@@ -63,6 +63,9 @@ public class Proyek {
     @Column(name = "update_at", columnDefinition = "TIMESTAMP")
     private Date updatedAt;
 
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
+    private Date deletedAt;
+
     @NotNull
     @Size(max = 30)
     @Column(name = "status", nullable = false)

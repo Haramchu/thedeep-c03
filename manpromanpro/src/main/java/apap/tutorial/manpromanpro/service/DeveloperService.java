@@ -10,5 +10,7 @@ public interface DeveloperService {
     List<Developer> getAllDeveloper();
 
     Developer getDeveloperById(Long idDeveloper);
+
+    Developer updateDeveloper(Developer developer);
 }
 
