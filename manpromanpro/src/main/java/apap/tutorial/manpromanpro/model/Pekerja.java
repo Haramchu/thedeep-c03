@@ -52,4 +52,3 @@ public class Pekerja {
     @ManyToMany
     List<Proyek> listProyek;
 }
-

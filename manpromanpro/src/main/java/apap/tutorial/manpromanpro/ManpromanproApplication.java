@@ -4,7 +4,6 @@ import apap.tutorial.manpromanpro.model.Developer;
 import apap.tutorial.manpromanpro.model.Proyek;
 import apap.tutorial.manpromanpro.service.DeveloperService;
 import apap.tutorial.manpromanpro.service.ProyekService;
-import apap.tutorial.manpromanpro.dto.request.AddProyekRequestDTO;
 import com.github.javafaker.Faker;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.CommandLineRunner;

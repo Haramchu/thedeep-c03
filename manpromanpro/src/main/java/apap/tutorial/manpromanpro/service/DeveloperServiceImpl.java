@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import apap.tutorial.manpromanpro.model.Developer;
-import apap.tutorial.manpromanpro.model.Proyek;
 import apap.tutorial.manpromanpro.repository.DeveloperDb;
 
 @Service
