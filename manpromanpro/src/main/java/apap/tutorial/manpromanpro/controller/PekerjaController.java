@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import apap.tutorial.manpromanpro.dto.request.AddPekerjaRequestDTO;
+import apap.tutorial.manpromanpro.dto.request.DeleteMultiplePekerjaDTO;
 import apap.tutorial.manpromanpro.model.Pekerja;
 import apap.tutorial.manpromanpro.service.PekerjaService;
 
@@ -38,6 +39,15 @@ public class PekerjaController {
                 String.format("Pekerja %s dengan ID %s berhasil ditambahkan.", pekerja.getNama(), pekerja.getId()));
 
         return "response-pekerja";
+    }
+
+    @PostMapping("/pekerja/delete")
+    public String deleteMultiplePekerja(
+        @ModelAttribute DeleteMultiplePekerjaDTO deleteMultiplePekerjaDTO
+    ){
+        pekerjaService.deleteListPekerja(deleteMultiplePekerjaDTO.getListPekerja());
+        
+        return "success-delete-pekerja";
     }
 
 }

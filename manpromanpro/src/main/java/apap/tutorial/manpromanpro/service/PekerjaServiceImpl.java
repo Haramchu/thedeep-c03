@@ -1,5 +1,6 @@
 package apap.tutorial.manpromanpro.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +28,13 @@ public class PekerjaServiceImpl implements PekerjaService {
 
     @Override
     public void deleteListPekerja(List<Pekerja> listPekerja) {
-        for (Pekerja pekerja : listPekerja) {
-            pekerjaDb.delete(pekerja);
+        var pekerjaToDelete = new ArrayList<Pekerja>();
+        if(listPekerja != null){
+            for (Pekerja pekerja : listPekerja) {
+                if(pekerja.getListProyek() == null || pekerja.getListProyek().isEmpty()){
+                    pekerjaToDelete.add(pekerja);
+                }
+            }
         }
     }
 }
