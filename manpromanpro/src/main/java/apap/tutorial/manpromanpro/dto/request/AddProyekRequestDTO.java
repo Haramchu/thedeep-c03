@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
+import apap.tutorial.manpromanpro.model.Developer;
 import apap.tutorial.manpromanpro.model.Pekerja;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -37,4 +38,7 @@ public class AddProyekRequestDTO {
     
     @NotBlank(message = "Pekerja proyek tidak boleh kosong")
     private List<Pekerja> listPekerja;
+
+    @NotNull(message = "Developer tidak boleh kosong")
+    private Developer developer;
 }
