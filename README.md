@@ -4,15 +4,19 @@
 
 * **Clement Samuel Marly** - *2206082114* - *A* 
 
-[Tutorial 1](#Tutorial-1)
+[Tutorial 1](#tutorial-1)
 
-[Tutorial 2](#Tutorial-2)
+[Tutorial 2](#tutorial-2)
+
+[Tutorial 3](#tutorial-3)
 
 ---
 ## Tutorial 1
 ### Apa yang telah saya pelajari hari ini
 1. Hal pertama yang saya pelajari adalah cara kerja gitlab itu sendiri. Meskipun tidak berbeda jauh dengan github, tetapi di dalam tutorial diajarkan cara menggunakan gitlab yang lebih terstruktur dengan bagian administrasi yang lebih detil.
 2. Cara kerja *framework* Springboot dengan strukturnya yang *Model-View-Controller*. Berbeda dengan Django, *framework* Springboot menggunakan bahasa java dan memiliki struktur yang berbeda.
+
+### Pertanyaan
 
 ### GitLab
 1. **Apa itu Issue Tracker? Apa saja masalah yang dapat diselesaikan dengan Issue Tracker?**
@@ -317,8 +321,205 @@ Elemen `<div>` hanya akan ditampilkan jika status proyek adalah "Finished" atau 
 
 Sumber: [Thymeleaf: Thymeleaf Tutorial](https://www.thymeleaf.org/doc/tutorials/2.1/thymeleafspring.html)
 
+---
+
+## Tutorial 3
+### Apa yang telah saya pelajari hari ini
+1. Fungsi Lombok sebagai sebuah library untuk getter, setter, dan lainnya.
+2. Cara menghubungkan database dengan proyek melalui docker dan melihatnya melalui dbeaver.
+
+### Pertanyaan
+1. **Jelaskan seluruh configuration properties (application, datasource, jpa) yang terdapat di dalam file application.yml!**
+```yml
+spring:
+    application:
+        name: manpromanpro
+```
+Properti ini menentukan nama aplikasi Spring Boot, yaitu manpromanpro. Nama ini dapat digunakan untuk keperluan logging, monitoring, dan identifikasi aplikasi.
+```yml
+spring:
+    datasource:
+        url: jdbc:postgresql://localhost:15001/manpromanpro
+        username: postgres
+        password: secret99
+```
+- `url`:
+Menentukan URL koneksi ke database PostgreSQL. Formatnya adalah `jdbc:postgresql://<host>:<port>/<database_name>`.
+`localhost` menunjukkan bahwa database server berjalan di komputer lokal.
+`15001` adalah port di mana server PostgreSQL berjalan.
+`manpromanpro` adalah nama database yang digunakan.
+- `username`:
+Menentukan username yang digunakan untuk mengakses database, yaitu `postgres`.
+- `password`:
+Menentukan password yang digunakan, yaitu `secret99`.
+
+```yml
+spring:
+   jpa:
+      properties:
+         hibernate:
+            jdbc:
+               lob:
+                  non_contextual_creation: true
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+```
+- `hibernate.jdbc.lob.non_contextual_creation`
+Properti ini diatur ke true untuk menghindari masalah terkait pembuatan LOB (Large Object) ketika menggunakan Hibernate. Ini sering diperlukan untuk kompatibilitas antara Hibernate dan driver database tertentu.
+- `hibernate.dialect`
+Properti ini menentukan dialect Hibernate yang digunakan untuk berkomunikasi dengan database.
+`org.hibernate.dialect.PostgreSQLDialect` adalah dialek yang digunakan untuk PostgreSQL. Dialek ini menyediakan Hibernate dengan informasi tentang cara menghasilkan SQL untuk fitur-fitur spesifik PostgreSQL.
+```yml
+spring:
+   jpa:
+      hibernate:
+         ddl-auto: create
+```
+Properti ini menentukan bagaimana Hibernate mengelola skema database pada saat startup aplikasi.
+- `ddl-auto: create:`
+Setiap kali aplikasi dijalankan, Hibernate akan membuat ulang skema database (tabel-tabel) dari awal sesuai dengan model entitas yang ada. Semua data yang ada sebelumnya akan dihapus karena tabel dibuat ulang. Pengaturan ini biasanya digunakan selama pengembangan untuk memastikan bahwa skema database selalu sinkron dengan model entitas. Berbeda dengan `update` yang tidak membuat ulang tabel dan justru meng-*update* tabel yang sudah ada.
+
+Sumber: 
+[Using application.yml vs application.properties in Spring Boot](https://www.baeldung.com/spring-boot-yaml-vs-properties)
+[SpringBoot Common Application Properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
+
+2. **Pada tutorial ini, kita menggunakan docker container untuk membentuk database. Apa keuntungan menggunakan docker container dibandingkan tanpa menggunakannya?**
+
+- **Portabilitas**:
+Docker memungkinkan database berjalan di lingkungan terisolasi yang bisa dipindahkan antar sistem tanpa perubahan konfigurasi. Dengan Docker, database bisa dijalankan lingkungan (pengembangan, pengujian, produksi) meskipun ada perbedaan konfigurasi atau sistem operasi.
+
+- **Konsistensi**:
+Docker memastikan database berjalan dalam lingkungan yang sama persis dengan semua dependensi yang telah ditentukan. Hal ini mengurangi risiko dimana aplikasi berjalan baik di satu sistem tetapi bermasalah di sistem lain karena perbedaan konfigurasi.
+
+- **Isolasi**:
+Docker memberikan isolasi yang tinggi antara aplikasi database dan sistem host. Ini berarti bahwa masalah atau bug yang terjadi dalam container database tidak akan mempengaruhi sistem host atau container lain yang berjalan di sistem yang sama.
+
+- **Deploy yang mudah**:
+Docker memudahkan membentuk, mengonfigurasi, dan menjalankan database menggunakan perintah sederhana seperti docker run.
+
+- **Kontrol Versi**:
+Docker memungkinkan versi database disimpan sebagai image, sehingga memudahkan untuk mengelola dan memperbarui versi database.
+
+- **Kemudahan dalam Skalabilitas dan Pengelolaan**:
+Docker memiliki tingkat skalabilitas yang tinggi dan dapat ditingkatkan sesuai dengan kebutuhan. Container dapat didistribusikan dan dikelola di berbagai node dengan menggunakan alat seperti Kubernetes.
+
+Sumber: [Jagoancloud - Apa itu Docker? Fungsi, Cara Kerja & Kelebihan Kekurangannya](https://jagoancloud.com/blog/docker-adalah/#:~:text=Keuntungan%20menggunakan%20kontainer%20dalam%20pengembangan%20perangkat%20lunak,-Portabilitas&text=Kontainer%20memberikan%20lingkungan%20runtime%20yang,pengembangan%2C%20pengujian%2C%20dan%20produksi.)
+
+3. **Jelaskan secara singkat apa itu dan kegunaan dari annotation dibawah ini
+(@Entity, @Table, @Column)**
+- `@Entity`
+Anotasi ini digunakan untuk menandai bahwa sebuah kelas adalah entitas yang akan dipetakan ke tabel di database. Setiap kelas yang diberi anotasi `@Entity` akan dipetakan ke sebuah tabel dalam database, dan setiap instance dari kelas tersebut akan mewakili baris dalam tabel tersebut. Dengan `@Entity`, kelas di Java dapat berfungsi sebagai representasi dari tabel database. Anotasi ini juga diperlukan untuk memberitahu JPA bahwa kelas tersebut adalah entitas yang perlu diproses oleh framework JPA.
+- `@Table`
+Anotasi ini digunakan untuk menentukan nama tabel yang akan digunakan untuk entitas yang bersangkutan. Anotasi ini bersifat opsional dan digunakan ketika nama tabel di database berbeda dengan nama kelas entitas di Java. `@Table` memungkinkan untuk mengatur nama tabel, skema, dan properti unik lainnya. Jika nama kelas entitas berbeda dengan nama tabel di database, `@Table` bisa digunakan untuk menyesuaikan nama tabel yang akan digunakan. Anotasi ini juga digunakan untuk mendefinisikan constraint unik, nama skema, dan informasi lain yang terkait dengan tabel.
+- `@Column`
+Anotasi ini digunakan untuk menentukan nama kolom yang dipetakan ke properti atau *field* tertentu dalam kelas entitas. `@Column` memungkinkan untuk menentukan nama kolom, panjang maksimum, apakah kolom bisa bernilai null, dan atribut lainnya yang berkaitan dengan kolom dalam tabel. Ini digunakan untuk menyesuaikan atribut dari *field* atau properti di kelas entitas dengan kolom di tabel database.
+
+Sumber: [Jakarta.persistence package documentation](https://jakarta.ee/specifications/persistence/2.2/apidocs/javax/persistence/package-summary)
+
+4. **Pada model, kita dapat menentukan relasi antarmodel dengan menggunakan JPA Annotation. Sebutkan seluruh JPA Annotation yang dapat digunakan untuk mendefinisikan relasi antarmodel beserta perbedaannya!**
+- `@ManyToOne`
+Anotasi ini digunakan untuk mendefinisikan hubungan banyak ke satu (many-to-one) antara dua entitas. Ini berarti bahwa banyak entitas dari satu jenis dapat berhubungan dengan satu entitas dari jenis lain. Misalnya, banyak Order dapat berhubungan dengan satu Customer.
+Contoh:
+```java
+@ManyToOne
+@JoinColumn(name = "customer_id")
+private Customer customer;
+```
+- `@OneToMany`
+Anotasi ini mendefinisikan hubungan satu ke banyak (one-to-many) antara dua entitas. Ini berarti bahwa satu entitas dari jenis tertentu dapat memiliki banyak entitas terkait dari jenis lain. Misalnya, satu Customer dapat memiliki banyak Order.
+Contoh:
+```java
+@OneToMany(mappedBy = "customer")
+private List<Order> orders;
+```
+- `@OneToOne`
+Anotasi ini digunakan untuk mendefinisikan hubungan satu ke satu (one-to-one) antara dua entitas. Setiap entitas dari jenis pertama hanya berhubungan dengan satu entitas dari jenis kedua, dan sebaliknya. Misalnya, setiap Employee hanya memiliki satu ParkingSpace.
+Contoh:
+```java
+@OneToOne
+@JoinColumn(name = "parking_space_id")
+private ParkingSpace parkingSpace;
+```
+- `@ManyToMany`
+Anotasi ini digunakan untuk mendefinisikan hubungan banyak ke banyak (many-to-many) antara dua entitas. Ini berarti bahwa banyak entitas dari satu jenis dapat berhubungan dengan banyak entitas dari jenis lain. Misalnya, banyak Student dapat berpartisipasi dalam banyak Course.
+Contoh:
+```java
+@ManyToMany
+@JoinTable(
+    name = "student_course",
+    joinColumns = @JoinColumn(name = "student_id"),
+    inverseJoinColumns = @JoinColumn(name = "course_id")
+)
+private List<Course> courses;
+```
+- `@JoinColumn`
+Anotasi ini digunakan untuk menentukan kolom join *foreign key* yang digunakan dalam hubungan antara dua entitas. Biasanya digunakan bersama dengan @ManyToOne, @OneToOne, atau @OneToMany untuk menentukan nama kolom *foreign key*.
+Contoh:
+```java
+@ManyToOne
+@JoinColumn(name = "department_id")
+private Department department;
+```
+- `@JoinTable`
+Anotasi ini digunakan untuk mendefinisikan tabel penghubung (junction table) dalam hubungan many-to-many. Tabel penghubung menyimpan referensi *foreign key* dari kedua entitas yang terlibat. Biasanya digunakan dalam anotasi @ManyToMany.
+Contoh:
+```java
+@ManyToMany
+@JoinTable(
+    name = "student_course",
+    joinColumns = @JoinColumn(name = "student_id"),
+    inverseJoinColumns = @JoinColumn(name = "course_id")
+)
+private List<Student> students;
+```
+
+Sumber: 
+[JPA Annotations Overview](https://medium.com/javarevisited/jpa-annotations-overview-cfdcfdb913f4)
+[JPA Annotations - Hibernate Annotations](https://www.digitalocean.com/community/tutorials/jpa-hibernate-annotations)
+
+5. **Pada model Proyek, terdapat annotation @JoinTable seperti berikut**
+![image2](tutorial-3-image1.png)
+**Jelaskan kegunaan annotation tersebut beserta seluruh parameternya!**
+Anotasi `@JoinTable` digunakan untuk mendefinisikan tabel penghubung dalam relasi many-to-many antara dua entitas. Pada manpromanpro, anotasi ini menghubungkan entitas Proyek dengan entitas Pekerja melalui tabel penghubung pekerja_proyek. `@JoinTable` juga memungkinkan untuk mendefinisikan *foreign key* dari kedua entitas yang terlibat dalam relasi. Hal ini diperlukan untuk menghubungkan baris di dua tabel entitas melalui tabel penghubung.
+- `name`
+Menentukan nama dari tabel penghubung yang akan digunakan untuk menyimpan relasi antara entitas Proyek dan Pekerja. `@JoinTable(name = "pekerja_proyek")` berarti nama tabel penghubung adalah pekerja_proyek.
+- `joinColumns`
+Menentukan kolom *foreign key* dari entitas Proyek yang akan digunakan dalam tabel penghubung. Kolom ini merujuk ke Proyek. `joinColumns = @JoinColumn(name = "id_proyek")` berarti id_proyek adalah nama kolom dalam tabel penghubung (pekerja_proyek) yang berfungsi sebagai *foreign key* dan merujuk ke *primary key* dari entitas Proyek.
+- `inverseJoinColumns`
+Menentukan kolom *foreign key* dari entitas yang berhubungan (dalam hal ini Pekerja) yang akan digunakan dalam tabel penghubung. Kolom ini merujuk ke Pekerja.`inverseJoinColumns = @JoinColumn(name = "id_pekerja")` berarti id_pekerja adalah nama kolom dalam tabel penghubung (pekerja_proyek) yang berfungsi sebagai *foreign key* dan merujuk ke *primary key* utama dari entitas Pekerja.
+
+Sumber: 
+[JPA Annotations Overview](https://medium.com/javarevisited/jpa-annotations-overview-cfdcfdb913f4)
+[JPA Annotations - Hibernate Annotations](https://www.digitalocean.com/community/tutorials/jpa-hibernate-annotations)
+
+6. **Jelaskan mengapa kita harus membentuk JPA Repository!**
+
+- **Abstraksi dan Kemudahan Penggunaan**
+JPA Repository menyediakan abstraksi tingkat tinggi untuk interaksi dengan database, yang berarti tidak perlu menulis banyak kode *boilerplate* untuk operasi CRUD (Create, Read, Update, Delete). Operasi seperti pencarian, penyimpanan, penghapusan, dan pembaruan data dapat dilakukan hanya dengan memanggil metode yang sudah disediakan.
+
+- ***Custom Query***
+JPA Repository memungkinkan untuk mendefinisikan query kustom menggunakan anotasi `@Query` untuk mendefinisikan query JPQL atau SQL langsung. Hal ini membuat pengguna bisa membuat *custom query* yang kompleks tanpa menulis kode *boilerplate*.
+
+- **Manajemen Transaksi Otomatis**
+JPA Repository secara otomatis mengelola transaksi database melalui anotasi `@Transactional` yang sudah terintegrasi. Hal ini menyederhanakan manajemen transaksi seperti commit dan rollback. Hal ini juga Mengurangi risiko bug terkait transaksi database seperti kehilangan data atau inkonsistensi data.
+
+- **Dukungan Proyeksi dan DTO (Data Transfer Object)**
+JPA Repository mendukung proyeksi, yang memungkinkan untuk menentukan bagian spesifik dari entitas yang akan dikembalikan dalam query, atau mengubah hasil query menjadi objek DTO (*Data Transfer Object*).
+
+Sumber: 
+[Spring - JPA Core Concepts](https://docs.spring.io/spring-data/jpa/reference/repositories/core-concepts.html)
+[Stackoverflow - What are the advantages of using Spring JPA Specifications over direct queries](https://stackoverflow-com.translate.goog/questions/68283776/what-are-the-advantages-of-using-spring-jpa-specifications-over-direct-queries?_x_tr_sl=en&_x_tr_tl=id&_x_tr_hl=id&_x_tr_pto=tc)
+
+7. **Sebutkan beberapa alternatif dari Java Faker!**
+- Instancio
+- Fixutre Monkey
+- Datafaker
+
+Sumber: 
+[Java Faker alternatives and similar libraries](https://java.libhunt.com/java-faker-alternatives)
+[Introduction to Datafaker](https://www.baeldung.com/java-datafaker)
 ### Apa yang belum saya pahami
-- [ ] Kenapa saya menggunakan Lombok? 
+- [x] Kenapa saya menggunakan Lombok? 
+   Untuk menggunakan berbagai metode dari library Lombok tanpa harus membuat kode berlebih.
 - [ ] Cara testing ?
 - [x] Apakah if else di html itu optimal?
    Bisa, tetapi lebih baik apabila tidak ada.
