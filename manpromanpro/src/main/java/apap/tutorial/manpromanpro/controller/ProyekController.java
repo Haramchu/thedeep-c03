@@ -182,9 +182,9 @@ public class ProyekController {
         model.addAttribute("page", "proyek");
         
         var proyek = proyekService.getProyekById(id);
-        proyek.getListPekerja().forEach(pekerja -> {
+        for(Pekerja pekerja: proyek.getListPekerja()){
             pekerja.getListProyek().remove(proyek);
-        });
+        }
         proyekService.deleteProyek(proyek);
 
         model.addAttribute("responseMessage",
