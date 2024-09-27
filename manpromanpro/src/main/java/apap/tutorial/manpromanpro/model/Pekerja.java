@@ -53,7 +53,6 @@ public class Pekerja {
     @ManyToMany
     List<Proyek> listProyek;
 
-    @NotNull
-    @Column(nullable = false)
-    private boolean isDeleted = false;
+    @Column(name = "deleted_at")
+    private Date deletedAt;
 }

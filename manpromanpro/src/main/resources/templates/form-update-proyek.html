@@ -87,9 +87,8 @@
                                         <tr th:each="pekerja, iterationStatus : *{listPekerja}">
                                             <td>
                                                 <select th:field="*{listPekerja[__${iterationStatus.index}__].id}" class="form-control">
-                                                    <option th:each="pekerjaExisting : ${listPekerjaExisting}"
-                                                            th:value="${pekerjaExisting.id}" th:text="${pekerjaExisting.nama}"
-                                                            th:selected="${pekerjaExisting.id} == *{listPekerja[__${iterationStatus.index}__].id}">
+                                                    <option th:each="pekerjaExisting : ${listPekerjaExisting}" 
+                                                            th:value="${pekerjaExisting.id}" th:text="${pekerjaExisting.nama}">
                                                     </option>
                                                 </select>
                                             </td>

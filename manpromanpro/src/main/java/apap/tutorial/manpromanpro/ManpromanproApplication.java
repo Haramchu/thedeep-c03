@@ -67,9 +67,12 @@ public class ManpromanproApplication {
 			pekerja.setBiografi(fakeBiografi.sentence());
 
 			pekerjaService.addPekerja(pekerja);
-			// List<Pekerja> listPekerja = new ArrayList<Pekerja>();
-			// listPekerja.add(pekerja);
-			// proyek.setListPekerja(listPekerja);
+
+			List<Pekerja> listPekerja = new ArrayList<>();
+            listPekerja.add(pekerja);
+            proyek.setListPekerja(listPekerja);
+
+            proyekService.addProyek(proyek);
 		};
 	}
 }

@@ -1,7 +1,10 @@
 package apap.tutorial.manpromanpro.controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import apap.tutorial.manpromanpro.dto.request.AddProyekRequestDTO;
 import apap.tutorial.manpromanpro.dto.request.UpdateProyekRequestDTO;
+import apap.tutorial.manpromanpro.model.Developer;
 import apap.tutorial.manpromanpro.model.Pekerja;
 import apap.tutorial.manpromanpro.model.Proyek;
 import apap.tutorial.manpromanpro.service.DeveloperService;
@@ -43,13 +47,14 @@ public class ProyekController {
     }
 
     @GetMapping("/")
-    private String home() {
+    private String home(Model model) {
+        model.addAttribute("page", "beranda");
         return "home";
     }
 
     @GetMapping("/proyek/add")
     public String addProyekForm(Model model) {
-
+        model.addAttribute("page", "proyek");
         var proyekDTO = new AddProyekRequestDTO();
 
         model.addAttribute("proyekDTO", proyekDTO);
@@ -63,6 +68,7 @@ public class ProyekController {
     @PostMapping("/proyek/add")
     public String addProyek(@ModelAttribute @Valid AddProyekRequestDTO proyekDTO, BindingResult bindingResult,
             Model model) {
+        model.addAttribute("page", "proyek");
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "fail-add-proyek";
@@ -90,7 +96,7 @@ public class ProyekController {
             @RequestParam(name = "nama", required = false, defaultValue = "") String nama,
             @RequestParam(name = "status", required = false, defaultValue = "") String status,
             Model model) {
-
+        model.addAttribute("page", "proyek");
         Sort sort = Sort.by(Sort.Order.asc("nama").ignoreCase());
 
         List<Proyek> listProyek = proyekService.getAllProyek(nama, status, sort);
@@ -103,6 +109,7 @@ public class ProyekController {
 
     @GetMapping("/proyek/{id}")
     public String detailProyek(@PathVariable("id") UUID id, Model model) {
+        model.addAttribute("page", "proyek");
         var proyek = proyekService.getProyekById(id);
 
         model.addAttribute("proyek", proyek);
@@ -112,6 +119,7 @@ public class ProyekController {
 
     @GetMapping("/proyek/{id}/update")
     public String updateProyek(@PathVariable("id") UUID id, Model model) {
+        model.addAttribute("page", "proyek");
         var proyek = proyekService.getProyekById(id);
 
         var proyekDTO = new UpdateProyekRequestDTO();
@@ -133,33 +141,50 @@ public class ProyekController {
     }
 
     @PostMapping("/proyek/update")
-    public String updateProyek(@ModelAttribute @Valid UpdateProyekRequestDTO proyekDTO, BindingResult bindingResult,
-            Model model) {
+    public String updateProyek(@Valid @ModelAttribute("proyekDTO") UpdateProyekRequestDTO proyekDTO,
+            BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("errors", bindingResult.getAllErrors());
-            return "fail-update-proyek";
+            model.addAttribute("listPekerjaExisting", pekerjaService.getAllPekerja());
+            model.addAttribute("listDeveloper", developerService.getAllDeveloper());
+            model.addAttribute("statusLevel", StatusLevel.values());
+            return "form-update-proyek";
         }
-        var proyekFromDTO = new Proyek();
-        proyekFromDTO.setId(proyekDTO.getId());
+
+        var proyekFromDTO = proyekService.getProyekById(proyekDTO.getId());
+        Developer developer = developerService.getDeveloperById(proyekDTO.getDeveloper().getId());
         proyekFromDTO.setNama(proyekDTO.getNama());
         proyekFromDTO.setDeskripsi(proyekDTO.getDeskripsi());
         proyekFromDTO.setTanggalMulai(proyekDTO.getTanggalMulai());
         proyekFromDTO.setTanggalSelesai(proyekDTO.getTanggalSelesai());
         proyekFromDTO.setStatus(proyekDTO.getStatus());
-        proyekFromDTO.setDeveloper(proyekDTO.getDeveloper());
-        proyekFromDTO.setListPekerja(proyekDTO.getListPekerja());
+        proyekFromDTO.setDeveloper(developer);
+        proyekFromDTO.getListPekerja().retainAll(Collections.emptyList());
+        Optional.ofNullable(proyekDTO.getListPekerja())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(pekerja -> pekerjaService.getPekerjaById(pekerja.getId()))
+                .filter(Objects::nonNull)
+                .forEach(existingPekerja -> {
+                    proyekFromDTO.getListPekerja().add(existingPekerja);
+                    existingPekerja.getListProyek().add(proyekFromDTO);
+                });
 
-        var proyek = proyekService.updateProyek(proyekFromDTO);
-
+        proyekService.updateProyek(proyekFromDTO);
         model.addAttribute("responseMessage",
-                String.format("Proyek %s dengan ID %s berhasil diupdate.", proyek.getNama(), proyek.getId()));
+                String.format("Proyek %s dengan ID %s berhasil diupdate.", proyekFromDTO.getNama(),
+                        proyekFromDTO.getId()));
 
         return "response-proyek";
     }
 
     @GetMapping("/proyek/{id}/delete")
     public String deleteProyek(@PathVariable("id") UUID id, Model model) {
+        model.addAttribute("page", "proyek");
+        
         var proyek = proyekService.getProyekById(id);
+        proyek.getListPekerja().forEach(pekerja -> {
+            pekerja.getListProyek().remove(proyek);
+        });
         proyekService.deleteProyek(proyek);
 
         model.addAttribute("responseMessage",
@@ -170,7 +195,7 @@ public class ProyekController {
 
     @PostMapping(value = "/proyek/add", params = { "addRow" })
     public String addRowDeveloperProyek(@ModelAttribute AddProyekRequestDTO addProyekRequestDTO, Model model) {
-
+        model.addAttribute("page", "proyek");
         if (addProyekRequestDTO.getListPekerja() == null || addProyekRequestDTO.getListPekerja().isEmpty()) {
             addProyekRequestDTO.setListPekerja(new ArrayList<>());
         }
@@ -189,6 +214,7 @@ public class ProyekController {
     public String deleteRowDeveloperProyek(@ModelAttribute AddProyekRequestDTO addProyekRequestDTO,
             @RequestParam("deleteRow") int row,
             Model model) {
+        model.addAttribute("page", "proyek");
         addProyekRequestDTO.getListPekerja().remove(row);
 
         model.addAttribute("listPekerjaExisting", pekerjaService.getAllPekerja());
@@ -198,5 +224,45 @@ public class ProyekController {
 
         return "form-add-proyek";
     }
+
+    @PostMapping(value = "/proyek/update", params = { "addRow" })
+    public String addRowPekerjaUpdateProyek(@ModelAttribute UpdateProyekRequestDTO proyekDTO, Model model) {
+        model.addAttribute("page", "proyek");
+        if (proyekDTO.getListPekerja() == null || proyekDTO.getListPekerja().isEmpty()) {
+            proyekDTO.setListPekerja(new ArrayList<>());
+        }
+
+        proyekDTO.getListPekerja().add(new Pekerja());
+
+        model.addAttribute("listPekerjaExisting", pekerjaService.getAllPekerja());
+        model.addAttribute("listDeveloper", developerService.getAllDeveloper());
+        model.addAttribute("proyekDTO", proyekDTO);
+        model.addAttribute("statusLevel", StatusLevel.values());
+
+        return "form-update-proyek";
+    }
+
+    @PostMapping(value = "/proyek/update", params = { "deleteRow" })
+    public String deleteRowPekerjaUpdateProyek(@ModelAttribute UpdateProyekRequestDTO proyekDTO,
+            @RequestParam("deleteRow") int row, Model model) {
+        model.addAttribute("page", "proyek");
+        proyekDTO.getListPekerja().remove(row);
+
+        model.addAttribute("listPekerjaExisting", pekerjaService.getAllPekerja());
+        model.addAttribute("listDeveloper", developerService.getAllDeveloper());
+        model.addAttribute("proyekDTO", proyekDTO);
+        model.addAttribute("statusLevel", StatusLevel.values());
+
+        return "form-update-proyek";
+    }
+
+    @GetMapping("proyek/datatable")
+    public String getDatatable(Model model) {
+        model.addAttribute("page", "proyek");
+        List<Proyek> listProyek = proyekService.getAllProyek();
+        model.addAttribute("listProyek", listProyek);
+        return "datatable-proyek";
+    }
+    
 
 }

@@ -9,5 +9,5 @@ import apap.tutorial.manpromanpro.model.Pekerja;
 
 @Repository
 public interface PekerjaDb extends JpaRepository<Pekerja, Long> {
-    List<Pekerja> findByIsDeletedFalse();
+    List<Pekerja> findAllByDeletedAtIsNull();
 }

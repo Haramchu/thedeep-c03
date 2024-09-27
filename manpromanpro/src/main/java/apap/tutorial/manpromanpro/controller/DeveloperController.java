@@ -26,6 +26,7 @@ public class DeveloperController {
 
     @GetMapping("/developer/add")
     public String formAddDeveloper(Model model) {
+        model.addAttribute("page", "developer");
         var developerDTO = new AddDeveloperRequestDTO();
 
         model.addAttribute("developerDTO", developerDTO);
@@ -35,6 +36,7 @@ public class DeveloperController {
 
     @PostMapping("/developer/add")
     public String addDeveloper(@ModelAttribute("developerDTO") AddDeveloperRequestDTO developerDTO, Model model) {
+        model.addAttribute("page", "developer");
         var developer = new Developer();
         developer.setNama(developerDTO.getNama());
         developer.setAlamat(developerDTO.getAlamat());
@@ -50,6 +52,7 @@ public class DeveloperController {
 
     @GetMapping("/developer/viewall")
     public String listDeveloper(Model model) {
+        model.addAttribute("page", "developer");
         var listDeveloper = developerService.getAllDeveloper();
 
         model.addAttribute("listDeveloper", listDeveloper);
@@ -58,6 +61,7 @@ public class DeveloperController {
 
     @GetMapping("/developer/{id}")
     public String detailDeveloper(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("page", "developer");
         var developer = developerService.getDeveloperById(id);
 
         model.addAttribute("developer", developer);
@@ -66,6 +70,7 @@ public class DeveloperController {
 
     @GetMapping("/developer/{id}/update")
     public String showUpdateForm(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("page", "developer");
         var developer = developerService.getDeveloperById(id);
 
         var developerDTO = new UpdateDeveloperRequestDTO();
@@ -83,6 +88,7 @@ public class DeveloperController {
 
     @PostMapping("/developer/update")
     public String updateDeveloper(@ModelAttribute UpdateDeveloperRequestDTO developerDTO, Model model) {
+        model.addAttribute("page", "developer");
         var developerFromDTO = developerService.getDeveloperById(developerDTO.getId());
         developerFromDTO.setNama(developerDTO.getNama());
         developerFromDTO.setAlamat(developerDTO.getAlamat());
