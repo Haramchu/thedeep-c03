@@ -75,6 +75,7 @@ public class ProyekController {
         proyek.setTanggalSelesai(proyekDTO.getTanggalSelesai());
         proyek.setStatus(proyekDTO.getStatus());
         proyek.setDeveloper(proyekDTO.getDeveloper());
+        proyek.setListPekerja(proyekDTO.getListPekerja());
 
         proyekService.addProyek(proyek);
 
@@ -121,10 +122,12 @@ public class ProyekController {
         proyekDTO.setTanggalSelesai(proyek.getTanggalSelesai());
         proyekDTO.setStatus(proyek.getStatus());
         proyekDTO.setDeveloper(proyek.getDeveloper());
+        proyekDTO.setListPekerja(proyek.getListPekerja());
 
         model.addAttribute("proyekDTO", proyekDTO);
         model.addAttribute("listDeveloper", developerService.getAllDeveloper());
         model.addAttribute("statusLevel", StatusLevel.values());
+        model.addAttribute("listPekerjaExisting", pekerjaService.getAllPekerja());
 
         return "form-update-proyek";
     }
@@ -144,6 +147,7 @@ public class ProyekController {
         proyekFromDTO.setTanggalSelesai(proyekDTO.getTanggalSelesai());
         proyekFromDTO.setStatus(proyekDTO.getStatus());
         proyekFromDTO.setDeveloper(proyekDTO.getDeveloper());
+        proyekFromDTO.setListPekerja(proyekDTO.getListPekerja());
 
         var proyek = proyekService.updateProyek(proyekFromDTO);
 

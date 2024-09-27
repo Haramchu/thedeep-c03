@@ -68,6 +68,29 @@
                         <p class="card-text col-sm-8"
                             th:text="${#dates.format(proyek.updatedAt, 'dd MMMM yyyy HH:mm')}"></p>
                     </div>
+                    <div class="row my-3"></div>
+                        <p class="card-text fw-bold col-sm-3">Daftar Pekerja</p>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Nama</th>
+                                        <th>Usia</th>
+                                        <th>Pekerjaan</th>
+                                        <th>Biografi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="pekerja : ${proyek.listPekerja}">
+                                        <td th:text="${pekerja.nama}"></td>
+                                        <td th:text="${pekerja.usia}"></td>
+                                        <td th:text="${pekerja.pekerjaan}"></td>
+                                        <td th:text="${pekerja.biografi}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
                     <div class="text-center m-3">
                         <a type="button" class="btn btn-primary btn-md" href="/proyek/viewall">Kembali</a>

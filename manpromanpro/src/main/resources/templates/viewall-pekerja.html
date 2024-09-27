@@ -14,7 +14,7 @@
         <div class="text-center my-4">
             <h2>Daftar Pekerja</h2>
         </div>
-        <form th:action="@{/pekerja/delete}" method="post">
+        <form th:action="@{/pekerja/delete}" th:object="${deleteDTO}" method="post">
             <table class="table">
                 <div class= "alert alert-warning" role="alert">
                     Catatan: Pekerja yang tidak dapat terpilih sudah memiliki relasi dengan sebuah proyek

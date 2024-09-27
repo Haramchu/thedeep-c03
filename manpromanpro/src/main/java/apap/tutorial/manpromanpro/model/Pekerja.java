@@ -1,5 +1,6 @@
 package apap.tutorial.manpromanpro.model;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -51,4 +52,8 @@ public class Pekerja {
 
     @ManyToMany
     List<Proyek> listProyek;
+
+    @NotNull
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 }

@@ -13,6 +13,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -65,6 +67,9 @@ public class ManpromanproApplication {
 			pekerja.setBiografi(fakeBiografi.sentence());
 
 			pekerjaService.addPekerja(pekerja);
+			// List<Pekerja> listPekerja = new ArrayList<Pekerja>();
+			// listPekerja.add(pekerja);
+			// proyek.setListPekerja(listPekerja);
 		};
 	}
 }

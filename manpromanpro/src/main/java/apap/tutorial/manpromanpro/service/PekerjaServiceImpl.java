@@ -23,16 +23,16 @@ public class PekerjaServiceImpl implements PekerjaService {
 
     @Override
     public List<Pekerja> getAllPekerja() {
-        return pekerjaDb.findAll(Sort.by(Sort.Order.asc("nama").ignoreCase()));
+        return pekerjaDb.findByIsDeletedFalse();
     }
 
     @Override
     public void deleteListPekerja(List<Pekerja> listPekerja) {
-        var pekerjaToDelete = new ArrayList<Pekerja>();
-        if(listPekerja != null){
+        if (listPekerja != null) {
             for (Pekerja pekerja : listPekerja) {
-                if(pekerja.getListProyek() == null || pekerja.getListProyek().isEmpty()){
-                    pekerjaToDelete.add(pekerja);
+                if (pekerja.getListProyek() == null || pekerja.getListProyek().isEmpty()) {
+                    pekerja.setDeleted(true);
+                    pekerjaDb.save(pekerja);
                 }
             }
         }

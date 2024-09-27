@@ -1,16 +1,23 @@
 package apap.tutorial.manpromanpro.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import apap.tutorial.manpromanpro.dto.request.AddPekerjaRequestDTO;
 import apap.tutorial.manpromanpro.dto.request.DeleteMultiplePekerjaDTO;
 import apap.tutorial.manpromanpro.model.Pekerja;
+import apap.tutorial.manpromanpro.model.Proyek;
 import apap.tutorial.manpromanpro.service.PekerjaService;
 
+@Controller
 public class PekerjaController {
     @Autowired
     private PekerjaService pekerjaService;
@@ -48,6 +55,16 @@ public class PekerjaController {
         pekerjaService.deleteListPekerja(deleteMultiplePekerjaDTO.getListPekerja());
         
         return "success-delete-pekerja";
+    }
+
+    @GetMapping("/pekerja/viewall")
+    public String listPekerja(Model model) {
+        var listPekerja = pekerjaService.getAllPekerja();
+        var deleteDTO = new DeleteMultiplePekerjaDTO();
+
+        model.addAttribute("listPekerja", listPekerja);
+        model.addAttribute("deleteDTO", deleteDTO);
+        return "viewall-pekerja";
     }
 
 }
