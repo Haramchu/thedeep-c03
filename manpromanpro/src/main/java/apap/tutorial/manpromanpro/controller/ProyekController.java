@@ -1,6 +1,7 @@
 package apap.tutorial.manpromanpro.controller;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -158,16 +159,7 @@ public class ProyekController {
         proyekFromDTO.setTanggalSelesai(proyekDTO.getTanggalSelesai());
         proyekFromDTO.setStatus(proyekDTO.getStatus());
         proyekFromDTO.setDeveloper(developer);
-        proyekFromDTO.getListPekerja().retainAll(Collections.emptyList());
-        Optional.ofNullable(proyekDTO.getListPekerja())
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(pekerja -> pekerjaService.getPekerjaById(pekerja.getId()))
-                .filter(Objects::nonNull)
-                .forEach(existingPekerja -> {
-                    proyekFromDTO.getListPekerja().add(existingPekerja);
-                    existingPekerja.getListProyek().add(proyekFromDTO);
-                });
+        proyekFromDTO.setListPekerja(proyekDTO.getListPekerja());
 
         proyekService.updateProyek(proyekFromDTO);
         model.addAttribute("responseMessage",
