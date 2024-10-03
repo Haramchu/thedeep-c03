@@ -35,20 +35,21 @@ public class PekerjaServiceImpl implements PekerjaService {
 
     @Override
     public void deleteListPekerja(List<Pekerja> listPekerja) {
+        var pekerjaToDelete = new ArrayList<Pekerja>();
+
         if (listPekerja != null) {
             for (Pekerja pekerja : listPekerja) {
-                if (pekerja.getListProyek() != null && !pekerja.getListProyek().isEmpty()) {
-                    throw new RuntimeException("Pekerja is associated with a Proyek and cannot be deleted.");
-                } else {
-                    pekerja.setDeletedAt(new Date());
-                    pekerjaDb.save(pekerja);
+                if (pekerja.getListProyek() == null || pekerja.getListProyek().isEmpty()) {
+                    pekerjaToDelete.add(pekerja);
                 }
             }
         }
+
+        pekerjaDb.deleteAll(pekerjaToDelete);
     }
 
     @Override
-    public Pekerja getPekerjaById(Long id){
+    public Pekerja getPekerjaById(Long id) {
         Optional<Pekerja> pekerja = pekerjaDb.findById(id);
         return pekerja.orElse(null);
     }

@@ -1,27 +1,19 @@
 package apap.tutorial.manpromanpro.model;
 
-import java.util.Date;
-import java.util.List;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.annotations.Where;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Getter
 @Setter
@@ -47,20 +39,22 @@ public class Developer {
     @Column(name = "tanggal_berdiri", columnDefinition = "DATE", nullable = false)
     private Date tanggalBerdiri;
 
-    @CreationTimestamp
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
-    private Date createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "update_at", columnDefinition = "TIMESTAMP")
-    private Date updatedAt;
-
     @Size(max = 30)
     @NotNull
     @Column(name = "email", nullable = false)
     private String email;
 
     @OneToMany(mappedBy = "developer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @Where(clause = "deleted_at IS NULL") // Hanya menampilkan proyek yang belum dihapus
+    @SQLRestriction("deleted_at IS NULL")
     private List<Proyek> listProyek;
+
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private Date createdAt;
+
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+    private Date updatedAt;
 }
