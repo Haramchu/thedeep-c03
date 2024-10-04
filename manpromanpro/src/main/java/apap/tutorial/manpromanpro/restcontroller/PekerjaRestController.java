@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,11 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import apap.tutorial.manpromanpro.restservice.PekerjaRestService;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 
 import java.util.Date;
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/pekerja")
@@ -58,13 +60,13 @@ public class PekerjaRestController {
         baseResponseDTO.setData(pekerja);
         baseResponseDTO.setMessage(String.format("Pekerja dengan ID %s berhasil ditemukan", pekerja.getId()));
         baseResponseDTO.setTimestamp(new Date());
-        
+
         return new ResponseEntity<>(baseResponseDTO, HttpStatus.OK);
     }
 
     @PostMapping("/add")
     public ResponseEntity<?> addPekerja(@Valid @RequestBody AddPekerjaRequestRestDTO pekerjaDTO,
-                                           BindingResult bindingResult) {
+            BindingResult bindingResult) {
         var baseResponseDTO = new BaseResponseDTO<PekerjaResponseDTO>();
 
         if (bindingResult.hasFieldErrors()) {
@@ -98,7 +100,7 @@ public class PekerjaRestController {
 
     @PutMapping("/update")
     public ResponseEntity<?> updatePekerja(@Valid @RequestBody UpdatePekerjaRequestRestDTO pekerjaDTO,
-                                           BindingResult bindingResult) {
+            BindingResult bindingResult) {
         var baseResponseDTO = new BaseResponseDTO<PekerjaResponseDTO>();
 
         if (bindingResult.hasFieldErrors()) {
@@ -129,4 +131,19 @@ public class PekerjaRestController {
 
         return new ResponseEntity<>(baseResponseDTO, HttpStatus.OK);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deletePekerja(@RequestBody List<Long> listIdPekerja) {
+        try {
+            pekerjaRestService.deletePekerja(listIdPekerja);
+            return new ResponseEntity<>("List Pekerja berhasil dihapus", HttpStatus.OK);
+        } catch (EntityNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (ConstraintViolationException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Terjadi kesalahan", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

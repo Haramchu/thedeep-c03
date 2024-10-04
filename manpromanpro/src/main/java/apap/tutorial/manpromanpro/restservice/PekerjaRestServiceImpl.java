@@ -5,6 +5,9 @@ import apap.tutorial.manpromanpro.restdto.request.UpdatePekerjaRequestRestDTO;
 import apap.tutorial.manpromanpro.restdto.response.DeveloperResponseDTO;
 import apap.tutorial.manpromanpro.restdto.response.PekerjaResponseDTO;
 import apap.tutorial.manpromanpro.restdto.response.ProyekResponseDTO;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import apap.tutorial.manpromanpro.model.Pekerja;
@@ -14,6 +17,7 @@ import apap.tutorial.manpromanpro.repository.ProyekDb;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 
@@ -36,7 +40,7 @@ public class PekerjaRestServiceImpl implements PekerjaRestService {
         if (pekerjaDTO.getBiografi() != null) {
             pekerja.setBiografi(pekerjaDTO.getBiografi());
         }
-        
+
         pekerja.setListProyek(new ArrayList<>());
         if (pekerjaDTO.getListProyek() != null) {
             pekerjaDTO.getListProyek().forEach(idProyek -> {
@@ -61,7 +65,7 @@ public class PekerjaRestServiceImpl implements PekerjaRestService {
         var listPekerja = pekerjaDb.findAll();
         var listPekerjaResponseDTO = new ArrayList<PekerjaResponseDTO>();
         listPekerja.forEach(pekerja -> {
-            var pekerjaResponseDTO =pekerjaToPekerjaResponseDTO(pekerja);
+            var pekerjaResponseDTO = pekerjaToPekerjaResponseDTO(pekerja);
             listPekerjaResponseDTO.add(pekerjaResponseDTO);
         });
 
@@ -122,7 +126,7 @@ public class PekerjaRestServiceImpl implements PekerjaRestService {
                         }
                     }
                 });
-            // Pekerja belum memiliki list proyek sebelumnya
+                // Pekerja belum memiliki list proyek sebelumnya
             } else {
                 pekerja.setListProyek(new ArrayList<>());
                 listProyekFromDTO.forEach(idProyek -> {
@@ -183,4 +187,41 @@ public class PekerjaRestServiceImpl implements PekerjaRestService {
         }
         return pekerjaResponseDTO;
     }
+
+    @Override
+    public void deletePekerja(List<Long> listIdPekerja) throws EntityNotFoundException, ConstraintViolationException {
+        // Hapus ID duplikat dari list
+        listIdPekerja = listIdPekerja.stream().distinct().collect(Collectors.toList());
+
+        List<Pekerja> pekerjaToDelete = new ArrayList<>();
+
+        for (Long id : listIdPekerja) {
+            Pekerja pekerja = pekerjaDb.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Pekerja dengan ID " + id + " tidak ditemukan"));
+
+            // Cek apakah pekerja memiliki proyek
+            if (pekerja.getListProyek() != null && !pekerja.getListProyek().isEmpty()) {
+                throw new ConstraintViolationException("Pekerja dengan ID " + id + " masih memiliki proyek", null);
+            }
+            pekerjaToDelete.add(pekerja);
+        }
+
+        // Lakukan penghapusan setelah semua pengecekan berhasil
+        pekerjaDb.deleteAll(pekerjaToDelete);
+    }
+    // @Override
+    // public void deletePekerja(List<Long> listIdPekerja) throws EntityNotFoundException, ConstraintViolationException {
+    //     for (Long idPekerja : listIdPekerja) {
+    //         Optional<Pekerja> pekerja = pekerjaDb.findById(idPekerja);
+    //         if (pekerja.isPresent()) {
+    //             if (pekerja.get().getListProyek() == null || pekerja.get().getListProyek().isEmpty()) {
+    //                 pekerjaDb.deleteById(idPekerja);
+    //             } else {
+    //                 throw new ConstraintViolationException("Pekerja dengan id " + idPekerja + " masih terdaftar pada proyek", null);
+    //             }
+    //         } else {
+    //             throw new EntityNotFoundException("Pekerja dengan id " + idPekerja + " tidak ditemukan");
+    //         }
+    //     }
+    // }
 }
