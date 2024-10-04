@@ -14,6 +14,7 @@ import apap.tutorial.manpromanpro.repository.ProyekDb;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.ArrayList;
 
 @Service
@@ -31,11 +32,11 @@ public class PekerjaRestServiceImpl implements PekerjaRestService {
         pekerja.setNama(pekerjaDTO.getNama());
         pekerja.setUsia(pekerjaDTO.getUsia());
         pekerja.setPekerjaan(pekerjaDTO.getPekerjaan());
-
+        pekerjaDTO.setListProyek(pekerjaDTO.getListProyek().stream().distinct().collect(Collectors.toList()));
         if (pekerjaDTO.getBiografi() != null) {
             pekerja.setBiografi(pekerjaDTO.getBiografi());
         }
-
+        
         pekerja.setListProyek(new ArrayList<>());
         if (pekerjaDTO.getListProyek() != null) {
             pekerjaDTO.getListProyek().forEach(idProyek -> {
@@ -84,7 +85,7 @@ public class PekerjaRestServiceImpl implements PekerjaRestService {
         if (pekerja == null) {
             return null;
         }
-
+        pekerjaDTO.setListProyek(pekerjaDTO.getListProyek().stream().distinct().collect(Collectors.toList()));
         pekerja.setNama(pekerjaDTO.getNama());
         pekerja.setUsia(pekerjaDTO.getUsia());
         pekerja.setPekerjaan(pekerjaDTO.getPekerjaan());

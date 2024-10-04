@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Data;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,4 +26,9 @@ public class AddPekerjaRequestRestDTO {
     private String biografi;
 
     private List<UUID> listProyek;
+
+    public void setListProyek(List<UUID> listProyek) {
+        this.listProyek = listProyek.stream().distinct().collect(Collectors.toList());
+    }
+
 }
