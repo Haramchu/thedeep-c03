@@ -10,8 +10,12 @@ import java.util.List;
 
 public interface PekerjaRestService {
     PekerjaResponseDTO addPekerja(AddPekerjaRequestRestDTO pekerjaDTO);
+
     List<PekerjaResponseDTO> getAllPekerja();
+
     PekerjaResponseDTO getPekerjaById(Long idPekerja);
+
     PekerjaResponseDTO updatePekerjaRest(UpdatePekerjaRequestRestDTO pekerjaDTO);
+
     void deletePekerja(List<Long> listIdPekerja) throws EntityNotFoundException, ConstraintViolationException;
 }

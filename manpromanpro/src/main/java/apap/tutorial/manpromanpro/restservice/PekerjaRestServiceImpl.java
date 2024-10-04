@@ -17,7 +17,6 @@ import apap.tutorial.manpromanpro.repository.ProyekDb;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 
@@ -209,19 +208,4 @@ public class PekerjaRestServiceImpl implements PekerjaRestService {
         // Lakukan penghapusan setelah semua pengecekan berhasil
         pekerjaDb.deleteAll(pekerjaToDelete);
     }
-    // @Override
-    // public void deletePekerja(List<Long> listIdPekerja) throws EntityNotFoundException, ConstraintViolationException {
-    //     for (Long idPekerja : listIdPekerja) {
-    //         Optional<Pekerja> pekerja = pekerjaDb.findById(idPekerja);
-    //         if (pekerja.isPresent()) {
-    //             if (pekerja.get().getListProyek() == null || pekerja.get().getListProyek().isEmpty()) {
-    //                 pekerjaDb.deleteById(idPekerja);
-    //             } else {
-    //                 throw new ConstraintViolationException("Pekerja dengan id " + idPekerja + " masih terdaftar pada proyek", null);
-    //             }
-    //         } else {
-    //             throw new EntityNotFoundException("Pekerja dengan id " + idPekerja + " tidak ditemukan");
-    //         }
-    //     }
-    // }
 }

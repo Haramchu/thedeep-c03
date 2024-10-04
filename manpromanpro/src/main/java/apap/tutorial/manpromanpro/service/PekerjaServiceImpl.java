@@ -1,9 +1,7 @@
 package apap.tutorial.manpromanpro.service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -12,9 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import apap.tutorial.manpromanpro.model.Pekerja;
-import apap.tutorial.manpromanpro.model.Proyek;
 import apap.tutorial.manpromanpro.repository.PekerjaDb;
-import apap.tutorial.manpromanpro.repository.ProyekDb;
 import apap.tutorial.manpromanpro.restdto.request.AddPekerjaRequestRestDTO;
 import apap.tutorial.manpromanpro.restdto.request.UpdatePekerjaRequestRestDTO;
 import apap.tutorial.manpromanpro.restdto.response.BaseResponseDTO;
