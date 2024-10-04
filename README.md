@@ -893,3 +893,179 @@ Contoh:
    Bisa, tetapi lebih baik apabila tidak ada.
 - [x] Apakah merge request harus diperbarui setiap push baru?
    Push ke dalam branch yang ingin di merge secara otomatis masuk ke dalam merge request.
+
+---
+
+## Tutorial 4
+### Apa yang telah saya pelajari hari ini
+1. Cara memisahkan database *production* dan *development* menggunakan file yml.
+2. Cara bulk delete menggunakan list dan row
+
+### Pertanyaan
+
+1. **Jelaskan apa yang terjadi ketika pengguna mengakses URL yang tidak valid? (Contoh: localhost:8080/abcde)**
+Ketika pengguna mengakses URL yang tidak valid seperti `localhost:8080/abcde`, *browser* akan mengirimkan HTTP Request ke server yang berjalan di localhost pada port 8080 untuk mencari halaman atau sumber daya yang diminta. Jika URL valid, maka Server akan mencari halaman atau endpoint yang sesuai dengan path `/abcde`. Jika ditemukan, server akan mengirimkan halaman tersebut kepada pengguna. Pada kasus ini, path `/abcde` tidak ditemukan oleh server atau belum didefinisikan, server akan mengembalikan respons dengan status kode HTTP 404 yang berarti halaman tidak ditemukan.
+Sebelum tutorial ini, server akan mengembalikan *whitelabel page error* karena belum ada *explicit mapping* untuk `/error`. Setelah tutorial (membuat *mapping* dan halaman untuk error), server akan mengembalikan halaman *error* yang sudah dibuat di dalam `templates/error`.
+
+Sumber: [Biznetgio - Apa itu 404 Not Found](https://www.biznetgio.com/news/apa-itu-404-not-found)
+
+2. **Apa yang dimaksud dengan spring profiles dan apa kegunaannya?**
+*Spring Profiles* adalah fitur dari framework SpringBoot yang digunakan untuk memisahkan konfigurasi aplikasi ke dalam berbagai *environment*, seperti dev (development), test (testing), dan prod (production). Dengan menggunakan *Spring Profiles*, berbagai konfigurasi bisa diaktifkan sesuai dengan lingkungan yang sedang digunakan tanpa perlu mengubah kode atau konfigurasi aplikasi secara manual.
+
+Dalam tutorial kali ini, *Spring Profiles* digunakan untuk memisahkan *database* antara *development* dan *production* melalui pengaturan `application-dev.yml`, `application-prod.yml`, dan `env`.
+Berikut adalah isi dari file env.
+```.env
+DATABASE_URL_DEV=jdbc:postgresql://localhost:15001/manpromanpro
+DATABASE_URL_PROD=jdbc:postgresql://localhost:15001/manpromanprod
+
+PROD_USERNAME=root
+PROD_PASSWORD=manprod-2206082114
+
+DEV_USERNAME=postgres
+DEV_PASSWORD=secret99
+
+```
+Berdasarkan isi dari file tersebut, dapat dilihat bahwa terdapat separasi yang dilakukan menggunakan *Spring Profiles* dengan adanya *database*, *username*, dan *password* yang berbeda untuk *production* atau *development*. Separasi ini beserta perubahan pada file ekstensi `yml` memungkinkan separasi *database* yang digunakan pada kedua lingkungan tanpa memerlukan pembuatan proyek baru atau modifikasi kode yang signifikan.
+
+Sumber: 
+[Baeldung - Spring Profiles](https://www.baeldung.com/spring-profiles)
+[Spring - Profiles](https://docs.spring.io/spring-boot/reference/features/profiles.html)
+
+3. **Jelaskan cara kerja “th:include” dan juga “th:replace” dan apa hubungan antar keduanya?**
+Dalam Thymeleaf, `th:include` dan `th:replace` digunakan untuk menyertakan fragmen template lain ke dalam template utama. Dalam tutorial kali ini, kedua hal tersebut digunakan untuk menambahkan fragmen `common.html` yang berisi *import* css dan js dan `navbar.html` yang berisi kode html untuk `navbar`. `common.html` menggunakan `th:include` karena digunakan untuk menambahkan *import*, sementara `navbar.html` menggunakan `th:replace` untuk menggantikan elemen nav di html host dengan navbar yang ada di *fragment* `navbar.html`.
+- `th:include` menyertakan isi dari fragmen yang ditentukan ke dalam elemen host, tanpa mengganti elemen host itu sendiri. Misalnya, jika kita memiliki fragmen footer seperti ini:
+   ```html
+   <div th:fragment="footer">
+   &copy; manpromanpro
+   </div>
+   ```
+   Lalu dimasukkan ke dalam template utama dengan:
+   ```html
+   <div th:include="footer :: footer">
+   </div>
+   ```
+   Maka hasil akhirnya akan menjadi:
+   ```html
+   <div>
+   &copy; manpromanpro
+   </div>
+   ```
+   Elemen `<div>` yang asli tetap ada, dan hanya isi dari fragmen footer yang dimasukkan ke dalamnya.
+
+- `th:replace` mengganti seluruh elemen host dengan fragmen yang ditentukan. Misalnya, jika kita menggunakan fragmen yang sama:
+   ```html
+   <div th:replace="footer :: footer">
+   </div>
+   ```
+   Maka hasil akhirnya akan seperti ini:
+   ```html
+   <footer>
+   &copy; manpromanpro
+   </footer>
+   ```
+   Dalam hal ini, elemen `<div>` asli akan digantikan sepenuhnya oleh elemen `<footer>` dari fragmen.
+
+   Perbedaan utama antara keduanya adalah bahwa `th:insert` dan `th:include` memasukkan konten fragmen ke dalam elemen host tanpa mengubah tag host, sedangkan `th:replace` menggantikan elemen host sepenuhnya dengan konten fragmen. `th:include` biasanya digunakan ketika kita ingin mempertahankan struktur elemen host, sementara `th:replace` digunakan ketika kita ingin mengganti seluruh elemen dengan fragmen yang spesifik.
+
+Sumber:
+[Thymeleaf - Tutorial](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#difference-between-thinsert-and-threplace-and-thinclude)
+
+4. **Apakah ada format lain dalam menuliskan konfigurasi pada spring boot selain dalam format yml? Jika ada, sebutkan dan jelaskan perbedaannya!**
+Ada, salah satu format tersebut adalah *Properties* atau `application.properties`. Berikut adalah perbedaan dari kedua format konfigurasi tersebut:
+- **Properties**
+   - **Format dan Sintaks**
+   Properties menggunakan format **key-value**, di mana setiap konfigurasi dituliskan pada baris yang terpisah dengan format **key=value**. 
+   ```properties
+   spring.datasource.url=jdbc:postgresql://localhost:15001/manpromanpro
+   spring.datasource.username=postgres
+   spring.datasource.password=secret99
+   ```
+   - **Struktur List dan Array**
+   Untuk merepresentasikan list atau array, properties harus menggunakan indeks numerik yang didefinisikan secara eksplisit.
+   ```properties
+   servers[0]=www.abc.test.com
+   servers[1]=www.xyz.test.com
+   ```
+
+   - **Penggunaan Placeholder**
+   Properties menggunakan *placeholder* dengan format `${}` untuk merujuk ke properti lain atau variabel.
+   ```properties
+   app.name=MyApp
+   app.description=${app.name}
+   ```
+
+- **YML**
+   - **Format dan Sintaks**
+   YML menggunakan format yang lebih ringkas dan mudah dibaca, dengan struktur hierarki yang ditunjukkan melalui indentasi.
+   ```yml
+   spring:
+      datasource:
+         url: jdbc:postgresql://localhost:15001/manpromanpro
+         username: postgres
+         password: secret99
+   ```
+
+   - **Struktur List dan Array**
+   YML mempunyai list atau array dapat direpresentasikan dengan format yang lebih ringkas dibandingkan properties menggunakan tanda strip -:
+
+   ```yml
+   application:
+      servers:
+         - ip: '127.0.0.1'
+            path: '/path1'
+         - ip: '127.0.0.2'
+            path: '/path2'
+   ```
+
+   - **Penggunaan Placeholder**
+   YML juga mendukung penggunaan placeholder dengan format yang sama seperti properties.
+   ```yml
+   app:
+      name: MyApp
+      description: "${app.name} is a Spring Boot application"
+   ```
+
+Sumber:[Baeldung - YML vs Properties](https://www.baeldung.com/spring-yaml-vs-properties)
+
+5. **Mengapa kita memerlukan dua environment yang berbeda (dev & prod), dan apa implikasinya jika tidak dibuat demikian?**
+Memiliki dua environment yang berbeda, yaitu *development* (dev) dan *production* (prod) akan sangat membantu dalam pengembangan proyek. Pemisahan *environment* akan membawa banyak keuntungan dan separasi yang jelas dari berbagai sisi, seperti *database* dan *testing*. Berikut adalah beberapa keuntungan dari pemisahan *environment*
+- **Separasi yang jelas**
+dev digunakan untuk pengembangan dan pengujian aplikasi. Ini memungkinkan  adanya eksperimen, membuat perubahan kode, dan menguji fungsionalitas tanpa mengganggu pengguna akhir.
+prod merupakan lingkungan yang digunakan oleh pengguna akhir. Semua konfigurasi dan data harus stabil dan siap untuk digunakan oleh pengguna. Ini berarti tidak ada tempat untuk eksperimen atau perubahan mendadak tanpa pengujian yang memadai.
+- **Mengurangi Risiko Downtime atau Data Rusak**
+Jika lingkungan dev dan prod tidak dipisahkan, perubahan atau bug yang diperkenalkan selama pengembangan dapat secara langsung memengaruhi aplikasi yang digunakan oleh pengguna akhir. Hal ini bisa menyebabkan kerusakan data, *downtime*, hilangnya kepercayaan pengguna, dankeuntungan yang bisa didapatkan dari aplikasi.
+- **Keamanan Data**
+dev biasanya menggunakan data tiruan atau data yang kurang sensitif untuk menghindari risiko keamanan. Ini memastikan pengembang tidak memiliki akses ke data nyata yang sensitif.
+Sebaliknya, prod memiliki data pengguna yang nyata dan sensitif. Jika environment ini tidak dipisahkan dari dev, maka risiko kebocoran data menjadi lebih besar.
+- **Konfigurasi yang Berbeda**
+dev bisa menggunakan database lokal, memiliki logging lebih detail, dan layanan dummy.
+prod biasanya menggunakan database yang sebenarnya, log level yang lebih simpel, dan layanan nyata.
+- **Testing dan Continuous Integration**
+dev memungkinkan untuk melakukan pengujian otomatis (*unit test*, *integration test*) dan *continuous integration* tanpa mengganggu pengguna akhir. Pengujian di environment prod tanpa pemisahan yang jelas dapat menyebabkan masalah besar jika ada kegagalan.
+
+**Implikasi Jika Tidak Dibuat Pemisahan:**
+- **Kerusakan Aplikasi dan Data:** 
+Kegagalan fitur atau bug tanpa pemisahan *environment* dapat langsung memengaruhi pengguna, yang dapat menyebabkan hilangnya data penting.
+- **Adanya *Downtime*:** 
+Pengembangan dan pengujian di prod dapat menyebabkan downtime yang tidak direncanakan.
+- **Masalah Keamanan:**
+Pengembang mungkin memiliki akses ke data sensitif selama pengembangan, yang meningkatkan risiko kebocoran data.
+
+Sumber:[Medium - Using Spring Boot Profiles for Different Environments](https://medium.com/@AlexanderObregon/using-spring-boot-profiles-for-different-environments-1b089333b80e#:~:text=Environment-specific%20configuration%3A%20One%20of,without%20changing%20the%20underlying%20code.)
+
+6. **Apa saja error yang mungkin terjadi pada aplikasi yang sudah dibuat? Berikan penjelasan dan sebutkan minimal dua jenis error.**
+
+- **Database Connection Error**
+Error ini terjadi ketika aplikasi tidak dapat terhubung ke database. Hal ini bisa disebabkan oleh konfigurasi database yang salah seperti URL, username, atau password yang tidak sesuai, atau server database yang belum menyala.
+
+- **NoSuchBeanDefinitionException**
+Error ini terjadi ketika SpringBoot tidak dapat menemukan bean yang diperlukan di konteks aplikasi. Ini biasanya disebabkan oleh kurangnya anotasi seperti @Service, @Repository, atau @Component pada class yang seharusnya didaftarkan sebagai bean.
+
+- **HTTP 404 Not Found**
+Error ini terjadi ketika pengguna mencoba mengakses URL yang tidak ada di aplikasi. Ini dapat terjadi jika URL yang dimasukkan salah atau jika tidak ada mapping controller yang sesuai dengan URL tersebut. Dalam tutorial kali ini, error ini di-*mapping* secara eksplisit untuk mengeluarkan halaman *error* yang sudah ditentukan.
+
+- **HTTP 500 Internal Server Error**
+Error ini terjadi ketika ada masalah internal di server, seperti NullPointerException, kesalahan logika, atau masalah pada dependency yang menyebabkan server gagal memproses request. Dalam tutorial kali ini, error ini di-*mapping* secara eksplisit untuk mengeluarkan halaman *error* yang sudah ditentukan.
+
+Sumber:[Mozilla - HTTP Response Status Codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
+
