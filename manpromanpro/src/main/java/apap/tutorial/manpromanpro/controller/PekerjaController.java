@@ -18,6 +18,8 @@ import apap.tutorial.manpromanpro.dto.request.DeleteMultiplePekerjaDTO;
 import apap.tutorial.manpromanpro.model.Pekerja;
 import apap.tutorial.manpromanpro.model.Proyek;
 import apap.tutorial.manpromanpro.restdto.request.AddPekerjaRequestRestDTO;
+import apap.tutorial.manpromanpro.restdto.request.UpdatePekerjaRequestRestDTO;
+import apap.tutorial.manpromanpro.restdto.response.PekerjaResponseDTO;
 import apap.tutorial.manpromanpro.service.PekerjaService;
 import apap.tutorial.manpromanpro.service.ProyekService;
 import jakarta.validation.Valid;
@@ -59,11 +61,10 @@ public class PekerjaController {
 
     @PostMapping("/pekerja/delete")
     public String deleteMultiplePekerja(
-        @ModelAttribute DeleteMultiplePekerjaDTO deleteMultiplePekerjaDTO
-    ){
+            @ModelAttribute DeleteMultiplePekerjaDTO deleteMultiplePekerjaDTO) {
         pekerjaService.deleteListPekerja(deleteMultiplePekerjaDTO.getListPekerja());
 
-        return "success-delete-pekerja";        
+        return "success-delete-pekerja";
     }
 
     @GetMapping("/pekerja/viewall")
@@ -131,6 +132,55 @@ public class PekerjaController {
 
             return "response-pekerja";
         } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "response-error-rest";
+        }
+    }
+
+    @GetMapping("/pekerja/rest/{idPekerja}/update")
+    public String formUpdatePekerja(@PathVariable("idPekerja") Long idPekerja, Model model) {
+        try {
+            PekerjaResponseDTO pekerja = pekerjaService.getPekerjaByIdFromRest(idPekerja);
+
+            // Membuat objek UpdatePekerjaRequestRestDTO dan mengisi field dengan setter
+            UpdatePekerjaRequestRestDTO pekerjaDTO = new UpdatePekerjaRequestRestDTO();
+            pekerjaDTO.setId(pekerja.getId());
+            pekerjaDTO.setNama(pekerja.getNama());
+            pekerjaDTO.setUsia(pekerja.getUsia());
+            pekerjaDTO.setPekerjaan(pekerja.getPekerjaan());
+            pekerjaDTO.setBiografi(pekerja.getBiografi());
+            //pekerjaDTO.setListProyek(pekerja.getListProyek());
+
+            // Menambahkan data ke model untuk dikirim ke view
+            model.addAttribute("pekerjaDTO", pekerjaDTO);
+            model.addAttribute("listProyek", proyekService.getAllProyek());
+
+            return "form-update-pekerja-rest";
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "response-error-rest";
+        }
+    }
+
+    @PostMapping("/pekerja/rest/update")
+    public String updatePekerja(@Valid @ModelAttribute("pekerjaDTO") UpdatePekerjaRequestRestDTO pekerjaDTO,
+            BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("listProyek", proyekService.getAllProyek());
+            return "form-update-pekerja-rest";
+        }
+
+        try {
+            // Melakukan update pekerja menggunakan service
+            PekerjaResponseDTO pekerjaUpdated = pekerjaService.updatePekerjaFromRest(pekerjaDTO);
+
+            // Mengirim pesan sukses ke halaman response-pekerja.html
+            model.addAttribute("responseMessage",
+                    String.format("Pekerja %s dengan ID %d berhasil diupdate.", pekerjaUpdated.getNama(),
+                            pekerjaUpdated.getId()));
+            return "response-pekerja";
+        } catch (Exception e) {
+            // Jika ada error, kembalikan ke halaman error
             model.addAttribute("errorMessage", e.getMessage());
             return "response-error-rest";
         }

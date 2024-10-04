@@ -16,6 +16,7 @@ import apap.tutorial.manpromanpro.model.Proyek;
 import apap.tutorial.manpromanpro.repository.PekerjaDb;
 import apap.tutorial.manpromanpro.repository.ProyekDb;
 import apap.tutorial.manpromanpro.restdto.request.AddPekerjaRequestRestDTO;
+import apap.tutorial.manpromanpro.restdto.request.UpdatePekerjaRequestRestDTO;
 import apap.tutorial.manpromanpro.restdto.response.BaseResponseDTO;
 import apap.tutorial.manpromanpro.restdto.response.PekerjaResponseDTO;
 
@@ -103,21 +104,40 @@ public class PekerjaServiceImpl implements PekerjaService {
     @Override
     public PekerjaResponseDTO addPekerjaFromRest(AddPekerjaRequestRestDTO pekerjaDTO) throws Exception {
         var response = webClient
-            .post()
-            .uri("/pekerja/add")
-            .bodyValue(pekerjaDTO)
-            .retrieve()
-            .bodyToMono(new ParameterizedTypeReference<BaseResponseDTO<PekerjaResponseDTO>>() {})
-            .block();
-    
+                .post()
+                .uri("/pekerja/add")
+                .bodyValue(pekerjaDTO)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<BaseResponseDTO<PekerjaResponseDTO>>() {
+                })
+                .block();
+
         if (response == null) {
             throw new Exception("Failed consume API addPekerja");
         }
-    
+
         if (response.getStatus() != 201) {
             throw new Exception(response.getMessage());
         }
-    
+
+        return response.getData();
+    }
+
+    @Override
+    public PekerjaResponseDTO updatePekerjaFromRest(UpdatePekerjaRequestRestDTO pekerjaDTO) throws Exception {
+        var response = webClient
+                .put()
+                .uri("/pekerja/update")
+                .bodyValue(pekerjaDTO)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<BaseResponseDTO<PekerjaResponseDTO>>() {
+                })
+                .block();
+
+        if (response == null || response.getStatus() != 200) {
+            throw new Exception("Gagal mengupdate pekerja.");
+        }
+
         return response.getData();
     }
 
