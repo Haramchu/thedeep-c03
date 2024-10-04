@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import apap.tutorial.manpromanpro.model.Pekerja;
 import apap.tutorial.manpromanpro.model.Proyek;
 
 @Service
@@ -37,6 +38,7 @@ public class ProyekServiceImpl implements ProyekService {
         }
         return null;
     }
+    
 
     @Override
     public Proyek updateProyek(Proyek proyek) {
