@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 
 @Repository
 public interface ProyekDb extends JpaRepository<Proyek, UUID> {
+    List<Proyek> findAllByDeletedAtIsNull();
     List<Proyek> findAllByDeletedAtIsNull(Sort sort);
     List<Proyek> findByStatusIgnoreCaseAndDeletedAtIsNull(String status, Sort sort);
     List<Proyek> findByNamaIgnoreCaseContainingAndDeletedAtIsNull(String nama, Sort sort);
