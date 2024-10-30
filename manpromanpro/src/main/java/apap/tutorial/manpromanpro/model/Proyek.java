@@ -4,6 +4,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,18 +21,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.format.annotation.DateTimeFormat;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 @Getter
 @Setter
@@ -34,6 +36,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Table(name = "proyek")
+@SQLDelete(sql = "UPDATE proyek SET deleted_at = NOW() WHERE id=?")
+@SQLRestriction("deleted_at IS NULL")
 public class Proyek {
     @Id
     private UUID id = UUID.randomUUID();
@@ -57,17 +61,6 @@ public class Proyek {
     @Column(name = "tanggal_selesai", columnDefinition = "DATE", nullable = false)
     private Date tanggalSelesai;
 
-    @CreationTimestamp
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP")
-    private Date createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "update_at", columnDefinition = "TIMESTAMP")
-    private Date updatedAt;
-
-    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
-    private Date deletedAt;
-
     @NotNull
     @Size(max = 30)
     @Column(name = "status", nullable = false)
@@ -80,16 +73,19 @@ public class Proyek {
     @ManyToMany
     @JoinTable(name = "pekerja_proyek", joinColumns = @JoinColumn(name = "id_proyek"),
             inverseJoinColumns = @JoinColumn(name = "id_pekerja"))
+    @SQLRestriction("deleted_at IS NULL")
     List<Pekerja> listPekerja;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = new Date();
-        updatedAt = new Date();
-    }
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private Date createdAt;
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = new Date();
-    }
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updated_at", nullable = false)
+    private Date updatedAt;
+
+    @Column(name = "deleted_at")
+    private Date deletedAt;
 }
