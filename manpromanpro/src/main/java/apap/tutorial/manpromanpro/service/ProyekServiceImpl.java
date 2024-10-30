@@ -61,8 +61,7 @@ public class ProyekServiceImpl implements ProyekService {
 
     @Override
     public void deleteProyek(Proyek proyek) {
-        proyek.setDeletedAt(new Date());
-        proyekDb.save(proyek);
+        proyekDb.delete(proyek);
     }
 
     @Override

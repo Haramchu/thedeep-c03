@@ -12,6 +12,8 @@
 
 [Tutorial 4](#tutorial-4)
 
+[Tutorial 5](#tutorial-5)
+
 ---
 ## Tutorial 1
 ### Apa yang telah saya pelajari hari ini
@@ -519,14 +521,6 @@ Sumber:
 Sumber: 
 [Java Faker alternatives and similar libraries](https://java.libhunt.com/java-faker-alternatives)
 [Introduction to Datafaker](https://www.baeldung.com/java-datafaker)
-### Apa yang belum saya pahami
-- [x] Kenapa saya menggunakan Lombok? 
-   Untuk menggunakan berbagai metode dari library Lombok tanpa harus membuat kode berlebih.
-- [ ] Cara testing ?
-- [x] Apakah if else di html itu optimal?
-   Bisa, tetapi lebih baik apabila tidak ada.
-- [x] Apakah merge request harus diperbarui setiap push baru?
-   Push ke dalam branch yang ingin di merge secara otomatis masuk ke dalam merge request.
 
 ---
 
@@ -703,3 +697,203 @@ Error ini terjadi ketika ada masalah internal di server, seperti NullPointerExce
 
 Sumber:[Mozilla - HTTP Response Status Codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
 
+---
+
+## Tutorial 5
+### Apa yang telah saya pelajari hari ini
+1. Cara menggunakan REST API dan mengimplementasikannya ke dalam proyek manpromanpro.
+2. Cara menguji API melalui ekstension VSCode (*Thunder Client*)
+
+### Pertanyaan
+
+1. **Sebelumnya kita sudah mengetahui pada saat mengirimkan sebuah HTTP Response perlu memasukkan kode status yang berperan memberikan informasi dari response yang akan diterima. Untuk kode status sendiri dikelompokkan menjadi 5 jenis yaitu kode status dengan awalan 1xx, 2xx, 3xx, 4xx, dan 5xx. Coba jelaskan arti dari masing-masing kode status (selain 2xx) dan kapan kita harus menggunakan kode status tersebut!.**
+
+   **Informational responses (1xx):**
+   Kode status ini menandakan bahwa server menerima permintaan dari klien dan prosesnya sedang berlangsung.
+   Digunakan ketika server ingin memberi tahu klien bahwa permintaan awal telah diterima dan klien dapat melanjutkan dengan mengirim sisa permintaan, atau mengabaikan respons jika permintaan telah selesai. Misalnya, `100 Continue` digunakan untuk memberi tahu klien untuk melanjutkan pengiriman bagian *body* permintaannya.
+
+   **Redirection messages (3xx):**
+   Kode status ini menunjukkan bahwa lebih banyak tindakan diperlukan oleh klien untuk menyelesaikan permintaannya, seringkali berhubungan dengan pemindahan halaman atau *redirect*.
+   Digunakan ketika *resource* yang diminta telah berpindah ke URL yang baru, atau ketika lebih dari satu respons mungkin benar. Misalnya, `301 Moved Permanently` digunakan untuk mengarahkan klien ke URL baru secara permanen dan `300 Multiple Choice` yang digunakan apabila ada beberapa kemungkinan respon.
+
+   **Client error responses (4xx):**
+   Kode status ini menunjukkan bahwa terdapat kesalahan pada sisi klien, seperti permintaan yang salah atau tidak ada akses.
+   Digunakan ketika server mengidentifikasi bahwa ada kesalahan yang dilakukan oleh klien seperti permintaan yang tidak valid atau akses yang ditolak. Misalnya, `404 Not Found` digunakan ketika *resource* yang diminta tidak dapat ditemukan di server.
+
+   **Server error responses (5xx):**
+   Kode status ini menunjukkan bahwa server gagal menyelesaikan permintaan yang valid atau terjadi kesalahan pada server.
+   Digunakan ketika server mengalami kegagalan dalam menjalankan permintaan yang seharusnya valid atau ketika terjadi masalah pada server itu sendiri. Misalnya, `500 Internal Server Error` digunakan ketika server menghadapi situasi yang tidak diketahui atau tidak dapat menangani permintaan.
+
+   Sumber:[Mozilla - HTTP Response Status Codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Status)
+
+2. **Jelaskan fungsi dari anotasi @JsonInclude, @JsonFormat, dan @JsonIgnore!.**
+
+ - **@JsonInclude:**
+   Anotasi ini digunakan untuk mengontrol properti yang disertakan dalam proses serialisasi JSON (proses mengubah objek Java menjadi JSON). Secara khusus, `@JsonInclude` dapat digunakan untuk mengecualikan properti yang memiliki nilai null, nilai kosong, atau nilai default saat objek Java diubah menjadi JSON.
+   Pada contoh, anotasi `@JsonInclude` digunakan pada kelas `Student` dengan parameter `JsonInclude.Include.NON_NULL`. Ini berarti properti yang bernilai null tidak akan disertakan dalam hasil JSON. Dalam contoh tersebut, properti `name` bernilai null, sehingga tidak akan muncul dalam JSON yang dihasilkan.
+   ```java
+      @JsonInclude(JsonInclude.Include.NON_NULL)
+      class Student { 
+         public int id; 
+         public String name;
+
+         Student(int id,String name){
+            this.id = id;
+            this.name = name;
+         }   
+      }
+   ```
+
+- **@JsonFormat:**
+   Anotasi ini digunakan untuk menentukan format ketika serialisasi dan deserialisasi properti, terutama properti dengan tipe `Date`. Dengan anotasi ini, kita bisa mengatur bagaimana nilai tanggal akan ditampilkan di JSON atau diparse dari JSON.
+   Dalam contoh, anotasi @JsonFormat digunakan pada properti `birthDate` di kelas `Student`. Anotasi ini mengatur agar nilai tanggal tersebut diformat menjadi string dengan pola `"dd-MM-yyyy"`. Ketika objek `Student` diserialisasi ke JSON, tanggal akan tampil dalam format yang ditentukan.
+   ```java
+      class Student { 
+         public int id;
+         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+         public Date birthDate;
+         Student(int id, Date birthDate){
+            this.id = id;
+            this.birthDate = birthDate;
+         } 
+      }
+   ```
+
+- **@JsonIgnore:**
+   Anotasi ini digunakan untuk mengabaikan properti tertentu saat proses serialisasi dan deserialisasi JSON. Dengan kata lain, properti yang diberi anotasi `@JsonIgnore` tidak akan muncul dalam output JSON dan juga tidak akan diambil dari input JSON.
+   Dalam contoh, anotasi `@JsonIgnore` digunakan pada properti` systemId` di kelas `Student`. Ketika objek diserialisasi menjadi JSON, properti `systemId` tidak akan disertakan dalam hasil JSON meskipun terdapat nilainya.
+   ```java
+   class Student { 
+      public int id;
+      @JsonIgnore
+      public String systemId;
+      public int rollNo;
+      public String name;
+
+      Student(int id, int rollNo, String systemId, String name){
+         this.id = id;
+         this.systemId = systemId;
+         this.rollNo = rollNo;
+         this.name = name;
+      }
+   }
+   ```
+
+   Sumber:[Tutorialspoint - Jackson Annotations](https://www.tutorialspoint.com/jackson_annotations/index.htm)
+
+3. **Berikan dua contoh tipe requestBody dan dua contoh tipe responseBody yang dapat digunakan pada RESTful API selain tipe application/json! Serta jelaskan juga kapan sebaiknya menggunakan tipe tersebut!.**
+
+**requestBody**
+- **Multipart Form Data (multipart/form-data)**
+   Digunakan untuk mengirimkan form data yang berisi *file* atau beberapa *field* data dalam satu *request*. Setiap bagian dari form dikirim sebagai *multipart* dengan *boundary* untuk memisahkan setiap elemen. Biasanya digunakan saat melakukan *file* upload, seperti mengunggah gambar, dokumen, atau *file* lainnya melalui API. 
+   Contoh: mengunggah data *profile* pengguna beserta gambar *profile*-nya:
+   ```plaintext
+      Content-Type: multipart/form-data; boundary=boundary
+
+      --boundary
+      Content-Disposition: form-data; name="username"
+
+      johndoe
+      --boundary
+      Content-Disposition: form-data; name="profile_picture"; filename="profile.jpg"
+      Content-Type: image/jpeg
+      <binary data of image>
+      --boundary--
+   ```
+- **Url Encoded Form (application/x-www-form-urlencoded)**
+   Mengirim data dalam format *key-value pairs* dimana setiap pasangan dikodekan ke dalam URL dan dikirim sebagai bagian dari body. Format ini mirip dengan cara pengiriman data form HTML menggunakan metode POST. Biasanya digunakan untuk pengiriman data sederhana berupa form data tanpa *file* atau *login*.
+   Contoh: Mengirimkan form login.
+   ```plaintext
+   Content-Type: application/x-www-form-urlencoded
+
+   username=johndoe&password=secretpassword
+   ```
+**responseBody**
+- **XML (application/xml)**
+   XML adalah format markup yang digunakan untuk menampilkan data terstruktur. Pada REST API, XML biasanya digunakan untuk mengirimkan respons yang banyak berhubungan dengan elemen secara hierarkis.
+   Contoh:
+   ```xml
+   <user>
+   <id>1</id>
+   <name>John Doe</name>
+   <email>johndoe@example.com</email>
+   </user>
+   ```
+- **Binary (application/octet-stream)**
+   Binary digunakan untuk mengirimkan data biner seperti gambar, video, atau file yang tidak bisa diwakili oleh teks. Pada respons ini, server mengirimkan data biner sebagai file mentah.
+   Contoh: Mengirimkan file PDF sebagai respons.
+   ```http
+      Content-Type: application/octet-stream
+      Content-Disposition: attachment; filename="report.pdf"
+      <binary data of the PDF>
+   ```
+
+   Sumber:[Firecamp - Request-Body](https://firecamp.io/docs/rest/request-body)
+
+4. **Jelaskan fungsi dari anotasi @ControllerAdvice dan @RestControllerAdvice!.**
+- **@ControllerAdvice**
+`@ControllerAdvice` digunakan untuk mendeklarasikan metode seperti `@ExceptionHandler`, @InitBinder, atau @ModelAttribute yang dapat diaplikasikan secara global ke seluruh *controller* dalam aplikasi Spring. `@ControllerAdvice` dapat digunakan saat ingin menerapkan penanganan yang sama pada seluruh *controller*, seperti *exception*
+Contoh:
+   ```java
+   @ControllerAdvice
+   public class GlobalExceptionHandler {
+      @ExceptionHandler(CustomException.class)
+      public ResponseEntity<String> handleCustomException() {
+         return new ResponseEntity<>("Handled exception!", HttpStatus.BAD_REQUEST);
+      }
+   }
+   ```
+   Berdasarkan contoh, setiap *controller* yang melempar `CustomException` akan ditangani oleh `GlobalExceptionHandler`.
+
+- **@RestControllerAdvice**
+`@RestControllerAdvice` adalah kombinasi dari `@ControllerAdvice` dan `@ResponseBody`. Artinya, semua metode yang ditandai dengan `@ExceptionHandler` dalam kelas yang menggunakan `@RestControllerAdvice` akan secara otomatis mengembalikan respons sebagai JSON atau format lain yang dihasilkan dari proses message conversion, tanpa perlu menggunakan anotasi `@ResponseBody` secara eksplisit pada setiap metode. @RestControllerAdvice berguna saat ingin mengembalikan respons langsung dalam format yang dapat dibaca oleh klien (seperti JSON atau XML) tanpa perlu menggunakan `ResponseEntity` atau anotasi `@ResponseBody` pada setiap metode handler.
+Contoh:
+   ```java
+   @RestControllerAdvice
+   public class RestGlobalExceptionHandler {
+      @ExceptionHandler(CustomException.class)
+      public ErrorResponse handleCustomException() {
+         return new ErrorResponse("Handled exception via RestControllerAdvice!");
+      }
+   }
+   ```
+   Berdasarkan contoh, `RestGlobalExceptionHandler` akan menangani pengecualian `CustomException` dan mengembalikan respons berupa objek `ErrorResponse` yang secara otomatis diubah menjadi JSON.
+
+   Sumber:
+   [Codersee - Controlleradvice vs Restcontrolleradvice](https://codersee.com/controlleradvice-vs-restcontrolleradvice/)
+   [Spring - Controlleradvice](https://docs.spring.io/spring-framework/reference/web/webflux/controller/ann-advice.html)
+
+5. **Jelaskan fungsi dari object class webClient! Apakah ada alternatif lain yang dapat kita gunakan selain object class webClient?**
+WebClient berfungsi sebagai HTTP client yang memungkinkan aplikasi untuk melakukan permintaan HTTP *asynchronous* dan *non-blocking*. WebClient menyediakan API yang mendukung komposisi logika *asynchronous* tanpa perlu berurusan langsung dengan *thread* atau *masalah concurrency*.WebClient juga mendukung berbagai jenis permintaan HTTP seperti GET, POST, PUT, DELETE, serta penanganan respons dalam format seperti JSON, XML, atau format lainnya.
+Contoh:
+   ```java
+   WebClient webClient = WebClient.builder()
+      .baseUrl("http://localhost:8080")
+      .build();
+   Mono<Echo> response = webClient
+      .get()
+      .uri("/echo/hello")
+      .retrieve()
+      .bodyToMono(Echo.class);
+
+   response.subscribe(System.out::println);
+   ```
+   Dalam contoh di atas, WebClient digunakan untuk mengirimkan permintaan `HTTP GET` ke /echo/hello, dan responsnya diambil sebagai objek Echo secara *asynchronous* menggunakan *Mono*.
+
+   **Alternatif**
+   - **RestTemplate**
+   *RestTemplate* adalah HTTP *client* lama yang digunakan di Spring Framework sebelum hadirnya WebClient. Berbeda dengan WebClient, *RestTemplate* bersifat *synchronous* dan *blocking*.
+
+   - **RestClient**
+   *RestClient* adalah HTTP client yang baru diperkenalkan untuk menggantikan RestTemplate. *RestClient* masih bersifat *blocking*, tetapi  *RestClient* memiliki API yang lebih modern dan fungsional seperti WebClient.
+
+### Apa yang belum saya pahami
+- [x] Kenapa saya menggunakan Lombok? 
+   Untuk menggunakan berbagai metode dari library Lombok tanpa harus membuat kode berlebih.
+- [ ] Cara testing ?
+- [x] Apakah if else di html itu optimal?
+   Bisa, tetapi lebih baik apabila tidak ada.
+- [x] Apakah merge request harus diperbarui setiap push baru?
+   Push ke dalam branch yang ingin di merge secara otomatis masuk ke dalam merge request.
+
+---
