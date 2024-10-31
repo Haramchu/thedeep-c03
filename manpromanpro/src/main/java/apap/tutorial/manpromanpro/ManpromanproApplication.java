@@ -30,49 +30,50 @@ public class ManpromanproApplication {
 	CommandLineRunner run(ProyekService proyekService, DeveloperService developerService, PekerjaService pekerjaService) {
 		return args -> {
 			var faker = new Faker(new Locale("in-ID"));
+			// for (int i = 0; i < 100; i++){
+			// 	var proyek = new Proyek();
+			// var fakeProyek = faker.leagueOfLegends();
+			// var fakeDate = faker.date();
 
-			var proyek = new Proyek();
-			var fakeProyek = faker.leagueOfLegends();
-			var fakeDate = faker.date();
+			// proyek.setNama(fakeProyek.champion());
+			// proyek.setDeskripsi(fakeProyek.quote());
+			// proyek.setTanggalMulai(fakeDate.past(2, TimeUnit.DAYS));
+			// proyek.setTanggalSelesai(fakeDate.future(2, TimeUnit.DAYS));
+			// proyek.setStatus("STARTED");
 
-			proyek.setNama(fakeProyek.champion());
-			proyek.setDeskripsi(fakeProyek.quote());
-			proyek.setTanggalMulai(fakeDate.past(2, TimeUnit.DAYS));
-			proyek.setTanggalSelesai(fakeDate.future(2, TimeUnit.DAYS));
-			proyek.setStatus("STARTED");
+			// var developer = new Developer();
+			// var fakeDeveloper = faker.name();
+			// var fakeAddress = faker.address();
 
-			var developer = new Developer();
-			var fakeDeveloper = faker.name();
-			var fakeAddress = faker.address();
+			// developer.setNama(fakeDeveloper.fullName());
+			// developer.setAlamat(fakeAddress.fullAddress());
+			// developer.setTanggalBerdiri(fakeDate.birthday());
+			// developer.setEmail("fakedeveloper@test.com");
 
-			developer.setNama(fakeDeveloper.fullName());
-			developer.setAlamat(fakeAddress.fullAddress());
-			developer.setTanggalBerdiri(fakeDate.birthday());
-			developer.setEmail("fakedeveloper@test.com");
+			// var newDeveloper = developerService.addDeveloper(developer);
+			// proyek.setDeveloper(newDeveloper);
 
-			var newDeveloper = developerService.addDeveloper(developer);
-			proyek.setDeveloper(newDeveloper);
+			// proyekService.addProyek(proyek);
 
-			proyekService.addProyek(proyek);
+			// var pekerja = new Pekerja();
+			// var fakePekerja = faker.name();
+			// var fakeUsia = faker.number();
+			// var fakePekerjaan = faker.job();
+			// var fakeBiografi = faker.lorem();
 
-			var pekerja = new Pekerja();
-			var fakePekerja = faker.name();
-			var fakeUsia = faker.number();
-			var fakePekerjaan = faker.job();
-			var fakeBiografi = faker.lorem();
+			// pekerja.setNama(fakePekerja.fullName());
+			// pekerja.setUsia(fakeUsia.numberBetween(20, 55));
+			// pekerja.setPekerjaan(fakePekerjaan.position());
+			// pekerja.setBiografi(fakeBiografi.sentence());
 
-			pekerja.setNama(fakePekerja.fullName());
-			pekerja.setUsia(fakeUsia.numberBetween(20, 55));
-			pekerja.setPekerjaan(fakePekerjaan.position());
-			pekerja.setBiografi(fakeBiografi.sentence());
+			// pekerjaService.addPekerja(pekerja);
 
-			pekerjaService.addPekerja(pekerja);
+			// List<Pekerja> listPekerja = new ArrayList<>();
+            // listPekerja.add(pekerja);
+            // proyek.setListPekerja(listPekerja);
 
-			List<Pekerja> listPekerja = new ArrayList<>();
-            listPekerja.add(pekerja);
-            proyek.setListPekerja(listPekerja);
-
-            proyekService.addProyek(proyek);
+            // proyekService.addProyek(proyek);
+			// }
 		};
 	}
 }
