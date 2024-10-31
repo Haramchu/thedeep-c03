@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -151,6 +152,26 @@ public class ProyekRestController {
             baseResponseDTO.setTimestamp(new Date());
             return new ResponseEntity<>(baseResponseDTO, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<?> searchProyekByNama(@RequestParam("nama") String nama) {
+        var baseResponseDTO = new BaseResponseDTO<List<ProyekResponseDTO>>();
+
+        List<ProyekResponseDTO> proyek = proyekRestService.getProyekByNama(nama);
+        if (proyek == null) {
+            baseResponseDTO.setStatus(HttpStatus.NOT_FOUND.value());
+            baseResponseDTO.setMessage("Data proyek tidak ditemukan");
+            baseResponseDTO.setTimestamp(new Date());
+            return new ResponseEntity<>(baseResponseDTO, HttpStatus.NOT_FOUND);
+        }
+
+        baseResponseDTO.setStatus(HttpStatus.OK.value());
+        baseResponseDTO.setData(proyek);
+        baseResponseDTO.setMessage(String.format("Proyek dengan nama %s berhasil ditemukan", nama));
+        baseResponseDTO.setTimestamp(new Date());
+
+        return new ResponseEntity<>(baseResponseDTO, HttpStatus.OK);
     }
 
 }
