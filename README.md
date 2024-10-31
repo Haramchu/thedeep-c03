@@ -897,3 +897,80 @@ Contoh:
    Push ke dalam branch yang ingin di merge secara otomatis masuk ke dalam merge request.
 
 ---
+
+## Tutorial 5
+### Apa yang telah saya pelajari hari ini
+1. Penggunaan rebase dan reset di dalam git.
+
+### Pertanyaan
+1. **Perhatikan apa yang terjadi pada file index.html pada branch feat/tutorial-6-advancedgit-1. Apa yang terjadi setelah git cherry-pick dilakukan? Apakah kita bisa melakukan cherrypick tanpa harus melakukan commit?**
+Setelah `git cherry-pick 9b05cfd` di branch feat/tutorial-6-advancedgit-1, perubahan dari commit `9b05cfd` di branch `tut6-for-cherrypick` akan diterapkan ke `index.html` di branch `feat/tutorial-6-advancedgit-1`. Artinya, kode HTML yang ditambahkan pada commit pertama di `tut6-for-cherrypick` akan ditambahkan ke `index.html` di `feat/tutorial-6-advancedgit-1`, menghasilkan file yang sekarang berisi commit `9b05cfd`
+git cherry-pick bisa dilakukan tanpa memerlukan commit. Melalui penggunaan opsi `-n` atau `--no-commit` pada perintah git cherry-pick. Dengan opsi ini, perubahan dari commit yang di-*cherry-pick* akan diterapkan ke *working tree* dan *index*, tetapi tidak akan di-*commit* secara otomatis. Berikut adalah perintahnya:
+   ```git
+   git cherry-pick -n <commit-id>
+   ```
+   Sumber: [Git Cherry Pick Documentation](https://git-scm.com/docs/git-cherry-pick)
+
+2. **Apa yang menjadi penyebab dari CONFLICT tersebut?**
+Berdasarkan dokumentasi git, konflik berasal ketika kedua pihak membuat perubahan pada area yang sama. Git tidak bisa secara acak memilih salah satu sisi dari sisi lainnya dan meminta untuk menyelesaikannya atau *resolve conflict*. Dalam kasus ini, konflik terjadi karena kedua pihak memiliki perubahan pada bagian body di `index.html`. Pada branch `tutorial-6-advancedgit-1`, body berisi `Body from tutorial-6-advancedgit-1`. Sementara itu branch `tut6-for-merge` memiliki body yang berisi `Body from tut6-for-merge`. Hal ini menyebabkan konflik.
+Sumber: [Git Merge Documentation](https://git-scm.com/docs/git-merge)
+
+3. **Jelaskan perbedaan dari "rebase –continue", "rebase –skip", dan "rebase –abort"!**
+`--continue`
+Mulai ulang proses *rebase* setelah menyelesaikan konflik *merge*
+`--skip`
+Mulai ulang proses *rebase* dengan melewatkan patch atau commit saat ini.
+`--abort`
+Batalkan operasi *rebase* dan setel ulang HEAD ke cabang asli. Jika `<branch>` diberikan ketika operasi *rebase* dimulai, maka HEAD akan direset ke `<branch>`. Jika tidak, HEAD akan diatur ulang ke keadaan semula ketika operasi *rebase* dimulai.
+Sumber: [Git Rebase Documentation](https://git-scm.com/docs/git-rebase)
+4. **Apa perbedaan Git Merge dengan Git Rebase? Buatlah/carilah ilustrasi yang dapat menggambarkan perbedaanya! Anda bisa menggunakan commit history (git log –oneline) Anda setelah melakukan rebase.**
+#### Merge
+![merge](tutorial-6-image2.png)
+#### Rebase
+![rebase](tutorial-6-image1.png)
+#### Commit History
+![log](tutorial-6-image3.png)
+**Git Merge:**
+Git Merge akan membuat commit baru yang disebut sebagai “merge commit” yang menggabungkan kedua branch tanpa mengubah commit history dari branch mana pun. Git Merge bersifat *non-destructive*, artinya commit history dari kedua branch tetap utuh. Branch feature akan menampilkan semua commit dari branch main tanpa mengubah atau memindahkan commit yang sudah ada.
+Contoh: Commit 1f5ab89 adalah contoh merge commit. Ini menunjukkan bahwa branch rebase-2 telah digabungkan ke branch utama (dengan membuat merge commit), tanpa mengubah urutan commit yang sudah ada di kedua branch.
+
+**Git Rebase:**
+Git Rebase akan mengambil commit dari satu branch dan “memindahkannya” di atas commit terbaru dari branch target. Ini menciptakan commit baru dari setiap commit di branch sumber, yang menyebabkan tampilan history yang lebih bersih dan linear. Penggunaan rebase akan menghasilkan history dengan semua commit pada branch sumber dibuat setelah commit terbaru pada branch target.
+Contoh: Proses rebase memiliki commit 8d4b95a dan 06021f4 yang berada di atas commit dari branch rebase-1 tanpa ada merge commit. Hal ini menunjukkan bahwa rebase berhasil membuat commit yang linier tanpa perlu ada “merge commit.”
+
+Sumber: [Atlassian Merge vs Rebase](https://www.atlassian.com/git/tutorials/merging-vs-rebasing)
+
+5. **Mengapa hal pada langkah no 4 bisa terjadi? Mengapa git stash menjadi solusinya? (halaman 20)**
+Gagal pindah branch disebabkan karena adanya perubahan yang belum di-*commit*. Apabila pemindahan branch tetap dilakukan, perubahan yang sudah ada di branch awal akan di-*overwrite* oleh branch tujuan pindah. Maka dari itu, git mencegah hilangnya perubahan yang sudah kita lakukan dengan mengagalkan checkout atau pindah branch.
+`Git stash` adalah solusi dalam hal ini untuk menyimpan perubahan sementara tanpa perlu melakukan commit. 
+Perintah `git stash` akan menyimpan perubahan yang ada (baik yang sudah ditambahkan ke staging area maupun yang belum) ke dalam tumpukan (*stash stack*) yang dapat kita ambil kembali nanti. Dengan begitu, *working directory* akan menjadi bersih sehingga kita bisa berpindah branch tanpa konflik atau kehilangan perubahan. Setelah berpindah branch dan melakukan apa yang diperlukan, kita bisa mengambil kembali perubahan yang disimpan di branch awal dengan menggunakan `git stash pop`.
+Sumber: 
+[Git Checkout Documentation](https://git-scm.com/docs/git-checkout)
+[Git Stash Documentation](https://git-scm.com/docs/git-stash)
+
+6. **Sebutkan dan jelaskan tiga tipe dari Git Reset!**
+`--hard`
+Mengubah HEAD, index, dan working tree sesuai commit target. Hal ini akan menghapus semua perubahan yang ada. Mode ini berguna jika ingin membatalkan commit dan menghapus semua perubahan di dalam working tree.
+`--soft` 
+Mengubah HEAD ke commit target tetapi tidak mengubah index atau working tree. Digunakan untuk membatalkan commit namun mempertahankan perubahan sebagai staged (siap untuk di-commit ulang).
+`--mixed` (default) 
+Mengubah HEAD dan index ke commit target, namun tetap mempertahankan perubahan di working tree. Mode ini berguna jika kita ingin membatalkan commit dan perubahan staged, sehingga perubahan kembali ke status unstaged.
+Sumber: [Git Reset Documentation](https://git-scm.com/docs/git-reset)
+
+7. **Apa itu git revert? Apa perbedaannya dengan git reset?**
+`git revert`
+Membuat commit baru yang membalikkan atau membatalkan perubahan dari commit yang ditentukan. Ini menjaga log commit asli tetap utuh dan menambah commit baru di atasnya. `git revert` cocok digunakan ketika ingin membatalkan perubahan dari commit tertentu tanpa menghapus commit dari log commit.
+`git reset`
+Menghapus atau mengubah log commit. Jika menggunakan git reset --hard, perintah ini akan memindahkan posisi branch ke commit tertentu dan menghapus semua commit yang berada di antara commit tersebut dan posisi awal HEAD. Ini dapat merusak log di repositori bersama karena menghapus commit yang sudah ada di log. Digunakan ketika ingin mengatur ulang posisi branch, biasanya di lingkungan pengembangan lokal dan belum di-*push*.
+Sumber: [Git Revert Documentation](https://git-scm.com/docs/git-revert)
+
+8. **Buatlah grafik yang menggambarkan alur commit pada bagian Git Flow and Branching ini serta jelaskan! Grafik dapat berupa tulis tangan maupun menggunakan software.**
+
+### Apa yang belum saya pahami
+- [x] Kenapa saya menggunakan Lombok? 
+   Untuk menggunakan berbagai metode dari library Lombok tanpa harus membuat kode berlebih.
+- [ ] Cara testing?
+- [x] Apakah if else di html itu optimal?
+   Bisa, tetapi lebih baik apabila tidak ada.
+- [x] Apakah merge request harus diperbarui setiap push baru?
+   Push ke dalam branch yang ingin di merge secara otomatis masuk ke dalam merge request.
