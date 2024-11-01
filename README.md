@@ -965,7 +965,89 @@ Menghapus atau mengubah log commit. Jika menggunakan git reset --hard, perintah 
 Sumber: [Git Revert Documentation](https://git-scm.com/docs/git-revert)
 
 8. **Buatlah grafik yang menggambarkan alur commit pada bagian Git Flow and Branching ini serta jelaskan! Grafik dapat berupa tulis tangan maupun menggunakan software.**
+Grafik flow, bagian atas adalah flow sebelum rebase dan bagian bawah adalah setelah rebase.
+![grafik-flow](tutorial-6-grafikflow.png)
+#### Langkah-Langkah Git Flow
+- Membuat branch `development`
+Buat branch `development` dari branch `main`:
+- Membuat direktori dan file Baru pada Branch `development` kemudian commit
+Membuat direktori baru bernama *git-flow* dan buat file base.html di branch `development`. Perubahan kemudian di-*add* dan di-*commit* dengan nama `tut6: add base.html` dan di push ke branch `development`.
+- Membuat branch `feature-a` dari branch `development`
+Membuat branch baru bernama `feature-a` dari branch `development` untuk modifikasi`base.html`. Perubahan kemudian di-*add* dan di-*commit* dengan nama `tut6: edit base.html` dan di push ke branch `feature-a`.
+- Merge branch `feature-a` ke branch `development`
+Kedua branch di-*merge* melalui gitlab sehingga branch `development` akan memiliki hasil modifikasi `base.html` yang sudah dilakukan di branch `feature-a`.
+- Membuat branch `feature-b` dari branch `development` tetapi belum pull hasil merge branch `feature-a` dan `development` di gitlab.
+Membuat branch baru bernama `feature-b` dari branch `development` untuk modifikasi`base.html`. Pembuatan branch dilakukan sebelum pull dari hasil merge branch`feature-a` ke branch `development` sehingga `base.html` di branch `feature-b` masih kosong. `base.html` kemudian dimodifikasi dan hasil modifikasi di-*add* dan di-*commit* dengan nama `tut6: edit base.html` serta di push ke branch `feature-b`.
+- Rebase branch `feature-b` dari branch d`evelopment`
+Melakukan rebase branch `feature-b` yang ternyata ada konflik akibat ada perubahan di `base.html` baik dari sisi `feature-b` maupun hasil merge `feature-a` ke `development`. Konflik diselesaikan dengan opsi *Accept Both Changes* dan di-*add* serta di-*commit* dengan nama `feat: solved conflict base.html` Rebase kemudian dilanjutkan (`--continue`) dan di push hasil rebase ke branch `feature-b`
+- Merge branch `feature-b` ke branch `development`
+Kedua branch di-*merge* melalui gitlab sehingga branch `development` akan memiliki hasil modifikasi `base.html` dari `feature-b` yang sudah di-*rebase* dengan commit dari branch `feature-a`.
+9. **Apa kegunaan dari langkah di atas?**
+**Membuat HTTP Header Manager:**
+HTTP Header Manager berfungsi untuk menambahkan atau mengelola header HTTP yang akan dikirim bersama request HTTP selama pengujian di JMeter. Dalam konteks pengujian aplikasi web atau API, header adalah bagian penting yang memberikan informasi tambahan kepada server.
+**Menambahkan Header content-type dengan Nilai application/json:**
+Header Content-Type menunjukkan kepada server format data yang dikirimkan dalam permintaan HTTP. Dengan mengatur nilai sebagai application/json, kita memberi tahu server bahwa data yang dikirimkan adalah dalam format JSON.
+Jika Content-Type tidak diatur, server mungkin tidak dapat memproses permintaan dengan benar atau bahkan bisa memberikan respons error.
+Sumber: [Blazemeter HTTP Header Manager](https://www.blazemeter.com/blog/http-header-manager)
+10. **Apa itu JSON Extractor? Sebutkan semua kegunaannya di Test Plan ini!**
+JSON Extractor adalah fitur di dalam Apache JMeter yang digunakan untuk mengekstrak nilai dari JSON response yang diterima setelah melakukan HTTP Request. JSON Extractor menggunakan JSON Path expressions untuk menemukan data spesifik dalam response dan menyimpan hasilnya dalam variabel JMeter. Variabel ini kemudian dapat digunakan dalam komponen lain di test plan, seperti Assertions atau dalam HTTP Request lainnya.
+Dalam kasus ini, JSON Extractor digunakan untuk mengambil idProyek dari proyek yang baru saja dibuat dan disimpan dalam bentuk $.data.id. idProyek nantinya akan digunakan dalam JSON Assertion untuk test *update* proyek tersebut.
+Sumber: [Blazemeter JSON Extractor](https://www.blazemeter.com/blog/json-extractor)
+11. **Apa itu Assertions dalam JMeter? Sebutkan contoh 3 Assertions dan kegunaannya!**
+Assertions dalam JMeter adalah komponen yang digunakan untuk memvalidasi respon dari server berdasarkan kriteria yang ditetapkan oleh pengguna. Assertions mengevaluasi respon dari server dan menentukan apakah hasil tes tersebut lulus atau gagal berdasarkan kondisi yang diberikan.
+Contoh Assertion:
+- Response Assertion:
+Response Assertion digunakan untuk memeriksa apakah teks respon, kode respon, atau header respon mengandung, cocok, atau sama dengan pola yang ditentukan. Misalnya, Response Assertion dapat digunakan untuk memastikan bahwa respon dari server mengandung kata tertentu atau mengembalikan kode status HTTP yang diharapkan seperti 200 OK.
+- Duration Assertion:
+Duration Assertion digunakan untuk memastikan bahwa request yang dikirim ke server diolah dalam batas waktu yang ditentukan. Jika waktu respons melebihi batas yang ditentukan, maka assertion akan gagal yang menandakan bahwa performa server mungkin tidak memadai.
+- Size Assertion:
+Size Assertion digunakan untuk memverifikasi ukuran respon dalam bytes. Ini berguna untuk memastikan bahwa ukuran respon sesuai dengan yang diharapkan, baik itu lebih besar, lebih kecil, sama dengan, atau tidak sama dengan ukuran tertentu yang ditentukan. Hal ini digunakan untuk memastikan ukuran respon yang dikirim tidak berlebih atau tidak kurang.
+Sumber: [Blazemeter JSON Assertions](https://www.blazemeter.com/blog/jmeter-assertions)
+12. **Apa itu Number of Threads dan Ramp-up Period? Apa hubungan antar keduanya?**
+**Number of Threads**
+Number of Threads merujuk pada jumlah total *virtual users* atau threads yang akan digunakan dalam pengujian. Setiap thread mewakili satu pengguna yang meniru interaksi dengan sistem atau aplikasi yang sedang diuji.
+**Ramp-up Period**
+Ramp-up Period adalah durasi waktu yang diperlukan untuk semua threads yang diatur dalam *Number of Threads* untuk diaktifkan. Misalnya, jika ada 100 threads dan ramp-up period adalah 100 detik, maka JMeter akan secara bertahap memulai masing-masing thread dalam kurun waktu tersebut, dengan kecepatan kira-kira satu thread per detik.
+**Contoh hubungan**
+Number of Threads (Pengguna): 500 
+Ramp-up Period: 100 detik 
+      - Steps: 5
+      - Setiap 20 detik (yaitu 100 detik dibagi 5 langkah), kumpulan pengguna baru akan dimulai.
+      - Setiap langkah akan memperkenalkan 100 pengguna (500 pengguna dibagi 5 langkah).
+      - Artinya JMeter memulai 5 pengguna setiap detik untuk setiap langkah karena 20 detik dibagi 100 pengguna menghasilkan 0,2 detik per pengguna.
 
+      Kombinasi antara jumlah threads dan durasi ramp-up period memungkinkan pengujian yang lebih fleksibel dan mendalam terhadap aplikasi, membantu dalam mengidentifikasi masalah performa di bawah berbagai kondisi beban. Ini juga membantu dalam mengoptimalkan sumber daya server untuk mengelola beban pengguna dalam produksi secara lebih efektif.
+Sumber: [Blazemeter Load Testing](https://loadfocus.com/docs/guides/load-testing/what-is-ramp-up-time-in-load-testing)
+13. **Gunakan angka 1000 untuk Number of Threads dan 100 untuk Ramp-up period. Jalankan Test Plan dengan konfigurasi tersebut. Kemudian, perhatikan Summary Report, View Result Tree, Graph Result, dan Assertion Result. Buatlah penjelasan minimal 2 paragraf untuk menjelaskan temuan menarik kalian terhadap hasil-hasil tersebut. Sertakan screenshot dari keempat result tersebut. Sertakan juga info mengenai prosesor, RAM, dan penggunaan hardisk HDD atau SSD dari perangkat Anda. (Jika perangkat Anda tidak kuat dengan angka konfigurasi tersebut, silakan turunkan angkanya).**
+**Laptop Specification**
+![spec](tutorial-6-image5.png)
+CPU = Ryzen 7845HX, 12 core, 24 thread, Base clock 3 GHz, Max boost clock 5.2 GHz
+SSD = 1TB, Sequential Read 4000 MB/S Sequential Write 3000 MB/S
+RAM = 16 gb, DDR 5 4800Mhz
+**Summary Report**
+![Summary-report](tutorial-6-summaryreport.png)
+***Summary Report*** menunjukkan tingkat kesuksesan dan kegagalan dari permintaan yang dikirim. Berdasarkan *summary report*, saya menemukan ada total 5000 samples atau hasil test dengan error rate sebesar 9.70%. Error rate ini terfokus pada satu test tertentu, yaitu Random Request 2206082114 dengan error rate yang signifikan sebesar 48.50% karena kesuksesan request ini adalah random. 
+Throughput juga mencapai 49.7 *requests per second* yang mengindikasikan bahwa sistem atau laptop saya mampu melakukan request dan mengirim respon dengan cukup cepat. Hal ini juga menandakan request atau respon yang diterima masih dalam skala kecil. *Received KB/sec* yang bernilai 3778.89/sec lebih tinggi dibandingkan *Send KB/sec* yang juga menunjukkan bahwa ukuran response yang diterima lebih besar dibandingkan ukuran request yang dikirim (lebih banyak GET daripada POST atau PUT).
+**View Result Tree**
+![view-result-tree](tutorial-6-viewresults.png)
+***View Results Tree*** dapat melihat detail dari setiap request yang dibuat, termasuk status sukses atau gagal. *View Result Tree* memungkinkan melihat request dan hasil response dari sistem yang sangat membantu dalam menganalisis request yang mana yang mengalami kegagalan dan memeriksa detail respons untuk menentukan penyebabnya. Dalam kasus pengerjaan tutorial, *View Result Tree* saya gunakan untuk mengetahui kesalahan pada bagian Update Proyek 2206082114 yang tidak berjalan akibat kesalahan penulisan (kurang $ di depan {idProyek}).
+**Graph Result**
+![graph-result](tutorial-6-graphresults.png)
+***Grafik*** menampilkan waktu respon terhadap waktu dimana kita bisa melihat ada peningkatan waktu respon yang konsisten dan beberapa outliers. Garis merah dan biru yang terus meningkat menunjukkan akumulasi waktu latensi seiring bertambahnya jumlah users. Ini menjadi indikasi bahwa sistem mulai terbebani seiring bertambahnya jumlah request yang dijalankan secara bersamaan. Garis hijau (*throughput*) yang relatif datar mengindikasikan throughput yang konsisten, menunjukkan bahwa meskipun ada peningkatan waktu respons, server masih mampu memproses requests dengan throughput yang stabil.
+**Assertion Result**
+![assertion-results](tutorial-6-assertionresults.png)
+***Assertion Results*** menampilkan hasil dari assertions yang dilakukan selama testing. 
+14. **Sembari menjalankan Test Plan, perhatikan pergerakan grafik pada JConsole. Buatlah penjelasan minimal 2 paragraf untuk menjelaskan temuan menarik kalian terhadap hasil-hasil tersebut. Sertakan screenshot dari grafik-grafik tersebut.**
+**JConsole**
+![jconsole](tutorial-6-image4.png)
+Dari hasil JConsole, terdapat beberapa hal menarik yang saya temukan. Pertama, ***Heap Memory Usage*** menunjukkan fluktuasi yang mencolok selama periode pengujian. Grafik menunjukkan penggunaan memori yang bergerak dari sekitar 50 MB dan mencapai hampir 100 MB pada beberapa titik waktu. Kenaikan yang cepat dan signifikan pada penggunaan memori dapat menunjukkan alokasi objek yang besar secara tiba-tiba, yang disebabkan oleh pengujian. Selain itu, pola naik turun yang terlihat menandakan aktivitas garbage collection yang terjadi, menunjukkan bahwa JVM sedang aktif dalam mengelola memori yang digunakan.
+Kedua, ***CPU Usage*** yang terlihat pada grafik cenderung sangat rendah, dengan puncak sesekali yang tidak lebih dari 0.8%. Ini mengindikasikan bahwa pengujian tidak banyak menggunakan CPU. Lonjakan pertama pada *CPU Usage* juga menunjukkan mulainya pengujian.
+Ketiga, **Classes** menunjukkan jumlah kelas yang dimuat selama periode pengujian. Lonjakan pertama pada **Classes* menunjukkan mulainya pengujian. Ini menunjukkan bahwa ada pemuatan kelas baru saat pengujian dimulai atau ada kelas yang dibuang (unloaded) dan kemudian dimuat kembali. Total kelas yang dimuat berjumlah 17,565, sementara total kelas yang di-*unload* sebesar 320.
+Terakhir, ***Thread Management*** menunjukkan jumlah thread yang stabil dengan sedikit variasi. Grafik menunjukkan jumlah thread aktif yang bertahan di sekitar angka 58 dengan puncak 59 dengan lonjakan kedua sebagai tanda awal mula pengujian. Peningkatan dan penurunan jumlah thread dalam grafik mencerminkan aktivitas sistem yang melakukan pemrosesan paralel atau *concurrent*.
+Sumber: [ITUOnline JConsole](https://www.ituonline.com/tech-definitions/what-is-jconsole/)
+
+15. **Apa itu Load Testing? Buatlah kesimpulan dari pengerjaan tutorial JMeter & JConsole ini.**
+**Load testing** adalah pengujian yang dilakukan untuk menentukan atau memvalidasi kinerja suatu aplikasi atau sistem dengan mensimulasikan jumlah pengguna yang besar (beban kerja yang besar). Tujuan dari *load testing* adalah untuk mengidentifikasi batas kapasitas aplikasi dan untuk memastikan bahwa aplikasi masih dapat beroperasi secara efisien di bawah beban kerja tinggi. Melalui JMeter, berbagai pengujian dapat dilakukan, baik dari sisi metode request, pengaturan *header*, jumlah virtualisasi *user* dan lainnya. Bersamaan dengan pengujian, JConsole juga dapat digunakan untuk memantau kinerja dari sistem untuk mengetahui apabila ada anomali dan batas dari sistem. Pengujian - pengujian ini akan membantu dalam mengidentifikasi masalah - masalah seperti kebocoran memori, batas throughput, dan kegagalan untuk diperbaiki sebelum aplikasi atau sistem diimplementasikan secara luas.
 ### Apa yang belum saya pahami
 - [x] Kenapa saya menggunakan Lombok? 
    Untuk menggunakan berbagai metode dari library Lombok tanpa harus membuat kode berlebih.
