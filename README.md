@@ -14,6 +14,8 @@
 
 [Tutorial 5](#tutorial-5)
 
+[Tutorial 6](#tutorial-6)
+
 ---
 ## Tutorial 1
 ### Apa yang telah saya pelajari hari ini
@@ -898,7 +900,7 @@ Contoh:
 
 ---
 
-## Tutorial 5
+## Tutorial 6
 ### Apa yang telah saya pelajari hari ini
 1. Penggunaan rebase dan reset di dalam git.
 
