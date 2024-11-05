@@ -184,4 +184,15 @@ public class ProyekRestServiceImpl implements ProyekRestService {
         return developerResponseDTO;
     }
 
+    @Override
+    public List<ProyekResponseDTO> getAllProyek() {
+        var listProyek = proyekDb.findAllByDeletedAtIsNull();
+        var listProyekResponseDTO = new ArrayList<ProyekResponseDTO>();
+        listProyek.forEach(proyek -> {
+            var proyekResponseDTO = proyekToProyekResponseDTO(proyek);
+            listProyekResponseDTO.add(proyekResponseDTO);
+        });
+        return listProyekResponseDTO;
+    }
+
 }

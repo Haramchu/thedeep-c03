@@ -118,7 +118,7 @@ public class ProyekRestController {
         }
 
         ProyekResponseDTO proyek = proyekRestService.updateProyekRest(proyekDTO);
-        if (proyek == null){
+        if (proyek == null) {
             baseResponseDTO.setStatus(HttpStatus.NOT_FOUND.value());
             baseResponseDTO.setMessage(String.format("Data proyek tidak ditemukan"));
             baseResponseDTO.setTimestamp(new Date());
@@ -141,7 +141,7 @@ public class ProyekRestController {
         try {
             // Call the service to delete the project
             proyekRestService.deleteProyek(idProyek);
-            
+
             baseResponseDTO.setStatus(HttpStatus.OK.value());
             baseResponseDTO.setMessage("Proyek dengan ID " + idProyek + " berhasil dihapus.");
             baseResponseDTO.setTimestamp(new Date());
@@ -169,6 +169,19 @@ public class ProyekRestController {
         baseResponseDTO.setStatus(HttpStatus.OK.value());
         baseResponseDTO.setData(proyek);
         baseResponseDTO.setMessage(String.format("Proyek dengan nama %s berhasil ditemukan", nama));
+        baseResponseDTO.setTimestamp(new Date());
+
+        return new ResponseEntity<>(baseResponseDTO, HttpStatus.OK);
+    }
+
+    @GetMapping("/viewall")
+    public ResponseEntity<BaseResponseDTO<List<ProyekResponseDTO>>> listProyek() {
+        List<ProyekResponseDTO> listProyek = proyekRestService.getAllProyek();
+
+        var baseResponseDTO = new BaseResponseDTO<List<ProyekResponseDTO>>();
+        baseResponseDTO.setStatus(HttpStatus.OK.value());
+        baseResponseDTO.setData(listProyek);
+        baseResponseDTO.setMessage("List proyek berhasil diambil");
         baseResponseDTO.setTimestamp(new Date());
 
         return new ResponseEntity<>(baseResponseDTO, HttpStatus.OK);
