@@ -7,3 +7,8 @@ export interface DeveloperInterface {
     createdAt: Date,
     updatedAt: Date,
 }
+
+export interface DeveloperOptionInterface {
+    id: number,
+    nama: string,
+}

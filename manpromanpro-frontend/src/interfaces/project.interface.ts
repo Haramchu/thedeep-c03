@@ -13,3 +13,12 @@ export interface ProjectInterface {
     developer: DeveloperInterface,
     listPekerja: PekerjaInterface[]
 }
+
+export interface ProjectRequestInterface {
+    nama: string,
+    deskripsi: string,
+    status: string,
+    tanggalMulai: string,
+    tanggalSelesai: string,
+    developer: string,
+}

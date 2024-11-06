@@ -15,6 +15,7 @@ onMounted(async () => {
             searchable: false,
         })
     }
+
 })
 </script>
 
@@ -24,21 +25,25 @@ onMounted(async () => {
             <span class="animate-pulse font-bold text-4xl">Fetching data...</span>
         </div>
         <div class="px-12 py-20 w-full" v-else>
-            <div v-if="projectStore.error" class="message-layer">
-                <span class="text-xl">{{ projectStore.error }}</span>
-            </div>
-            <div v-else class="flex flex-col gap-6">
+            <div v-if="!projectStore.error" class="flex flex-col gap-6">
                 <RouterLink to="/proyek/add">
                     <VButton class="add-button">+ Buat Proyek Baru</VButton>
                 </RouterLink>
                 <table id="default-table">
                     <thead>
                         <tr>
-                            <th class="flex items-center">Nama</th>
-                            <th data-type="date" data-format="YYYY/DD/MM" class="flex items-center">Tanggal</th>
-                            <th class="flex items-center">Developer</th>
-                            <th class="flex items-center">Status</th>
-                            <th class="flex items-center">Aksi</th>
+                            <th>
+                                <span class="flex items-center">Nama</span>
+                            </th>
+                            <th data-type="date" data-format="YYYY/DD/MM">
+                                <span class="flex items-center">Developer</span>
+                            </th>
+                            <th>
+                                <span class="flex items-center">Status</span>
+                            </th>
+                            <th>
+                                <span class="flex items-center">Aksi</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -60,9 +65,16 @@ onMounted(async () => {
                     </tbody>
                 </table>
             </div>
+            <div v-else class="message-layer">
+                <span class="text-xl">{{ projectStore.error }}</span>
+            </div>
         </div>
     </main>
 </template>
+
+
+
+
 
 <style scoped>
 .message-layer {

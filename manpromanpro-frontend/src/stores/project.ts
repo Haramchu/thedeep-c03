@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
-import type { ProjectInterface } from '@/interfaces/project.interface'
+import type { ProjectInterface, ProjectRequestInterface } from '@/interfaces/project.interface'
 import type { CommonResponseInterface } from '@/interfaces/common.interface'
+import { useToast } from 'vue-toastification'
+import router from '@/router'
 
 export const useProjectStore = defineStore('project', {
     state: () => ({
@@ -19,6 +21,28 @@ export const useProjectStore = defineStore('project', {
                 this.projects = data.data
             } catch (err) {
                 this.error = `Gagal mengambil proyek ${err}`
+            } finally {
+                this.loading = false
+            }
+        },
+        async addProject(body: ProjectRequestInterface) {
+            this.loading = true
+            this.error = null
+        
+            try {
+                const response = await fetch('http://localhost:8080/api/proyek/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                });
+                const data: CommonResponseInterface<ProjectInterface> = await response.json()
+                this.projects.push(data.data)
+        
+                useToast().success('Sukses menambahkan proyek')
+                await router.push('/proyek')
+            } catch (err) {
+                this.error = `Gagal menambah proyek ${(err as Error).message}`
+                useToast().error(this.error)
             } finally {
                 this.loading = false
             }
