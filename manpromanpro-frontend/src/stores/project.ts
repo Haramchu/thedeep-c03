@@ -85,6 +85,31 @@ export const useProjectStore = defineStore('project', {
             } finally {
                 this.loading = false;
             }
+        },
+        async deleteProject(id: string): Promise<void> {
+            this.loading = true;
+            this.error = null;
+
+            try {
+                const response = await fetch(`http://localhost:8080/api/proyek/${id}/delete`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+
+                if (response.ok) {
+                    this.projects = this.projects.filter(
+                        (project) => project.id !== id
+                    );
+                    useToast().success("Sukses menghapus proyek");
+                    window.location.reload();
+                }
+            } catch (err) {
+                this.error = `Gagal menghapus proyek ${(err as Error).message}`;
+                useToast().error(this.error);
+            } finally {
+                this.loading = false;
+            }
         }
+
     },
 })
