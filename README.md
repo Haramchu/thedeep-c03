@@ -16,6 +16,8 @@
 
 [Tutorial 6](#tutorial-6)
 
+[Tutorial 7](#tutorial-7)
+
 ---
 ## Tutorial 1
 ### Apa yang telah saya pelajari hari ini
@@ -1050,6 +1052,89 @@ Sumber: [ITUOnline JConsole](https://www.ituonline.com/tech-definitions/what-is-
 
 15. **Apa itu Load Testing? Buatlah kesimpulan dari pengerjaan tutorial JMeter & JConsole ini.**
 **Load testing** adalah pengujian yang dilakukan untuk menentukan atau memvalidasi kinerja suatu aplikasi atau sistem dengan mensimulasikan jumlah pengguna yang besar (beban kerja yang besar). Tujuan dari *load testing* adalah untuk mengidentifikasi batas kapasitas aplikasi dan untuk memastikan bahwa aplikasi masih dapat beroperasi secara efisien di bawah beban kerja tinggi. Melalui JMeter, berbagai pengujian dapat dilakukan, baik dari sisi metode request, pengaturan *header*, jumlah virtualisasi *user* dan lainnya. Bersamaan dengan pengujian, JConsole juga dapat digunakan untuk memantau kinerja dari sistem untuk mengetahui apabila ada anomali dan batas dari sistem. Pengujian - pengujian ini akan membantu dalam mengidentifikasi masalah - masalah seperti kebocoran memori, batas throughput, dan kegagalan untuk diperbaiki sebelum aplikasi atau sistem diimplementasikan secara luas.
+### Apa yang belum saya pahami
+- [x] Kenapa saya menggunakan Lombok? 
+   Untuk menggunakan berbagai metode dari library Lombok tanpa harus membuat kode berlebih.
+- [ ] Cara testing?
+- [x] Apakah if else di html itu optimal?
+   Bisa, tetapi lebih baik apabila tidak ada.
+- [x] Apakah merge request harus diperbarui setiap push baru?
+   Push ke dalam branch yang ingin di merge secara otomatis masuk ke dalam merge request.
+
+## Tutorial 7
+### Apa yang telah saya pelajari hari ini
+1. Cara menghubungkan Vue js dengan SpringBoot serta cara menggunakannya.
+
+### Pertanyaan
+1. **Jelaskan apa saja maksud dari pilihan konfigurasi pada awal inisialiasi proyek vue!**
+![konfigurasi-vue](tutorial-7-image1.png)
+**Project Name**: Ini adalah nama proyek.
+**Add TypeScript**: menggunakan TypeScript atau superset dari JavaScript yang menambahkan tipe statis. TypeScript membantu dalam mengetahui kesalahan sejak awal dengan memungkinkan pemeriksaan tipe.
+**Add JSX Support**: menggunakan JSX (JavaScript XML) yang merupakan syntax tambahan yang memungkinkan menulis komponen dalam bentuk seperti syntax HTML di JavaScript (seperti React js).
+**Add Vue Router for Single Page Application development**: menggunakan Vue Router atau library bawaan Vue untuk membuat aplikasi *single-page* (SPA). Ini memungkinkan pengaturan atau *routing* tiap halaman yang bisa dilakukan dalam satu file.
+**Add Pinia for state management**: menggunakan Pinia atau *state management library* resmi untuk Vue untuk mengelola dan menyimpan data aplikasi di satu tempat yang bisa diakses oleh berbagai komponen.
+**Add Vitest for Unit Testing**: tidak menggunakan Vitest atau framework testing untuk JavaScript. Hal ini mungkin dilakukan karena tidak ada rencana pengujian vue untuk proyek.
+**Add an End-to-End Testing Solution**: tidak menambahkan alat pengujian **end-to-end** (E2E), yaitu pengujian yang melibatkan seluruh aplikasi dari awal hingga akhir. Hal ini mungkin dilakukan karena tidak ada rencana pengujian vue untuk proyek.
+**Add ESLint for code quality**: menggunakan ESLint atau alat untuk mendeteksi dan memperbaiki masalah pada kode, seperti gaya penulisan dan potensi kesalahan. Menjaga kualitas kode dengan ESLint memudahkan pemeliharaan kode dan membantu konsistensi kode antar pengembang.
+**Add Prettier for code formatting**: menggunakan Prettier atau formatter kode otomatis untuk membantu memformat kode agar lebih jelas dan mudah untuk dibaca.
+**Add Vue DevTools 7 extension for debugging (experimental)**: tidak menggunakan Vue DevTools 7 atau ekstensi untuk melihat status aplikasi Vue, state komponen, dan debugging.
+Sumber: 
+[Vue js Guide](https://vuejs.org/guide/)
+[JSX docs](https://legacy.reactjs.org/docs/introducing-jsx.html)
+[Vitest Guide](https://vitest.dev/guide/)
+[ESLint docs](https://eslint.org/docs/latest/)
+[Prettier](https://prettier.io)
+2. **Apa itu vite?**
+**Vite** adalah *build tool* yang dikembangkan oleh Evan You, pembuat Vue.js, untuk meningkatkan efisiensi pengembangan aplikasi frontend. 
+Vite memiliki dua fungsi utama:
+- Menyediakan server pengembangan yang sangat cepat dengan fitur *hot module replacement* (HMR) yang memungkinkan pengembang melihat perubahan kode secara langsung di browser tanpa memuat ulang seluruh halaman.
+- Vite melakukan bundling dan optimalisasi kode yang menghasilkan bundle yang lebih kecil untuk di-*deploy*.
+**Apakah Kita Bisa Menggunakan Vue Tanpa Vite?**
+**Ya**, Vue bisa digunakan tanpa Vite. Sebelum Vite populer, Vue biasanya dikonfigurasi menggunakan Vue CLI atau Webpack secara langsung.
+Sumber: 
+[Vue js Tooling](https://vuejs.org/guide/scaling-up/tooling)
+[Vite guide](https://vite.dev/guide/)
+3. **Jelaskan masing-masing fungsi dari assets, components, router, stores, dan view pada proyek aplikasi Vue JS!**
+**assets**
+Folder assets digunakan untuk menyimpan file static seperti gambar, icon, file CSS global, dan resource lainnya yang tidak berubah untuk diimport dan digunakan di dalam proyek. Dalam manpromanpro-frontend, assets berisi `index.css` yang berisi import style css dari Tailwind css dan `logo.svg` untuk logo.
+**components**
+Folder components berisi komponen - komponen Vue yang dapat digunakan kembali di berbagai bagian aplikasi. Komponen adalah unit kecil dari aplikasi yang memiliki logika, tampilan, dan gaya tersendiri. Komponen biasanya berbentuk file .vue yang berisi tiga bagian: template, script, dan style. Setiap komponen memiliki satu tanggung jawab tertentu, seperti Navbar, Footer, atau Button. Komponen di dalam folder ini bersifat *reusable* yang berarti dapat digunakan kembali di berbagai tempat dalam aplikasi.
+**router**
+Folder router berisi pengaturan rute (*routing*) untuk aplikasi yang menggunakan Vue Router. File dalam folder ini mendefinisikan setiap rute atau halaman, termasuk komponen mana yang akan ditampilkan untuk setiap jalur URL.
+**stores**
+Folder stores berisi *manajemen state global aplikasi* dengan menggunakan Pinia. State di dalam stores memungkinkan pengelolaan data aplikasi di satu tempat pusat sehingga lebih mudah untuk diperbarui dan diakses oleh berbagai komponen. Dalam manpromanpro-frontend, stores digunakan untuk pengolahan data untuk viewall, add, view, update, dan delete.
+**views**
+Folder views berisi halaman utama untuk rute aplikasi, seperti AboutView, HomeView, CreateProyekView, dan lainnya. Setiap file di views adalah sebuah komponen yang mewakili halaman atau tampilan secara lengkap, berbeda dengan folder components yang berisi komponen yang *reusable*, komponen di folder views biasanya hanya digunakan di satu rute tertentu. Oleh karena itu, setiap file di views umumnya dihubungkan langsung ke satu rute melalui router.
+[Vue js Guide](https://vuejs.org/guide/)
+4. **Kenapa agar Vue JS dapat mengakses REST API yang ada pada Spring Boot, kalian harus menambahkan konfigurasi CORS terlebih dahulu?**
+**Konfigurasi CORS (Cross-Origin Resource Sharing)** ditambahkan agar aplikasi Vue.js yang berjalan di `http://localhost:5173` dapat mengakses REST API yang disediakan oleh aplikasi SpringBoot dari `http://localhost:8080`. Tanpa konfigurasi ini, permintaan dari Vue.js ke REST API kemungkinan akan ditolak karena kebijakan keamanan yang diterapkan oleh browser yang disebut **Same-Origin Policy**.
+**Same-Origin Policy** adalah kebijakan keamanan pada browser yang membatasi bagaimana dokumen atau script yang dimuat dari satu origin dapat berinteraksi dengan resource dari origin lain. Secara default, browser memblokir permintaan yang berasal dari domain yang berbeda.
+**CORS** adalah mekanisme yang memungkinkan server untuk mengizinkan akses dari domain lain dengan mengatur respons HTTP tertentu. Dengan mengaktifkan CORS, server dapat mengontrol origin, metode, dan header yang diperbolehkan sehingga aplikasi web yang berjalan di domain berbeda dapat mengakses resource.
+Sumber: [SpringBoot CORS](https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html)
+5. **Jelaskan apa kegunaan interface pada typescript dan apa perbedaannya dengan types serta kapan harus menggunakan yang mana!**
+Dalam TypeScript, **interface** adalah struktur yang digunakan untuk mendefinisikan tipe khusus dengan menetapkan bentuk dan tipe dari data yang akan digunakan dalam program (semacam DTO). interface membantu dalam menjaga konsistensi struktur data, terutama dalam aplikasi berskala besar dengan banyak komponen dan tipe data yang kompleks. **interface** juga memungkinkan TypeScript memberikan saran otomatis (*autocomplete*) dan memvalidasi tipe saat coding. Misalnya jika menggunakan ProjectInterface atau ProjectRequestInterface dalam kode, editor akan membantu dengan *autocompletion* dan peringatan apabila ada kesalahan dalam penggunaan struktur data tersebut. Adanya interface juga mempermudah refactoring dan maintenance serta menghindari penggunaan tipe implicit.
+**Perbedaan antara interface dan types**
+**Extensibility**:
+interface mendukung extends secara alami sehingga mudah untuk membuat interface baru dengan mewarisi properti dari interface lain.
+type juga bisa digabungkan dengan tipe lain menggunakan intersection types (&), tetapi tidak semudah interface.
+**Declaration Merging**:
+interface mendukung *declaration merging* yang berarti jika tidak sengaja mendefinisikan dua interface dengan nama yang sama, TypeScript akan menggabungkannya.
+type tidak mendukung fitur ini sehingga jika ada dua type dengan nama yang sama, maka akan terjadi error.
+Contoh merging:
+```ts
+interface Person {
+  name: string;
+}
+interface Person {
+  age: number;
+}
+const person: Person = { name: "John", age: 30 };
+```
+**Kapan Harus Menggunakan interface atau type?**
+interface digunakan saat ingin mendefinisikan struktur untuk sebuah objek yang bisa diperluas atau digabungkan. Sementara itu, type digunakan jika membutuhkan tipe yang lebih kompleks, seperti union types atau jika tipe yang dibuat tidak perlu *extend* atau merging.
+Sumber:
+[TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/interfaces.html)
+[TypeScript Advanced Types](https://www.typescriptlang.org/docs/handbook/advanced-types.html)
 ### Apa yang belum saya pahami
 - [x] Kenapa saya menggunakan Lombok? 
    Untuk menggunakan berbagai metode dari library Lombok tanpa harus membuat kode berlebih.
