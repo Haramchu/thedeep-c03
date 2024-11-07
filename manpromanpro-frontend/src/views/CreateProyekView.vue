@@ -12,11 +12,11 @@ const projectModel = reactive<ProjectRequestInterface>({
     tanggalMulai: "",
     tanggalSelesai: "",
     status: "",
-    developer: ""
+    developer: "",
+    listPekerja: []
 })
 
 const addProject = async (bodyRequest: ProjectRequestInterface) => await projectStore.addProject(bodyRequest)
-
 </script>
 
 <template>

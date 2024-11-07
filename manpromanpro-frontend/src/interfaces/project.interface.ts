@@ -21,4 +21,5 @@ export interface ProjectRequestInterface {
     tanggalMulai: string,
     tanggalSelesai: string,
     developer: string,
+    listPekerja: PekerjaInterface[]
 }
