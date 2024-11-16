@@ -124,6 +124,22 @@ public class ProyekRestServiceImpl implements ProyekRestService {
         proyekDb.save(proyek);
     }
 
+    @Override
+    public List<ProyekResponseDTO> getProyekByNama(String nama) {
+        var listProyek = proyekDb.findByNamaIgnoreCaseContainingAndDeletedAtIsNull(nama, null);
+
+        if (listProyek == null) {
+            return null;
+        }
+        var listProyekResponseDTO = new ArrayList<ProyekResponseDTO>();
+        listProyek.forEach(proyek -> {
+            var proyekResponseDTO = proyekToProyekResponseDTO(proyek);
+            listProyekResponseDTO.add(proyekResponseDTO);
+        });
+
+        return listProyekResponseDTO;
+    }
+
     private ProyekResponseDTO proyekToProyekResponseDTO(Proyek proyek) {
         ProyekResponseDTO proyekResponseDTO = new ProyekResponseDTO();
         proyekResponseDTO.setId(proyek.getId());
@@ -166,6 +182,17 @@ public class ProyekRestServiceImpl implements ProyekRestService {
         developerResponseDTO.setCreatedAt(developer.getCreatedAt());
         developerResponseDTO.setUpdatedAt(developer.getUpdatedAt());
         return developerResponseDTO;
+    }
+
+    @Override
+    public List<ProyekResponseDTO> getAllProyek() {
+        var listProyek = proyekDb.findAllByDeletedAtIsNull();
+        var listProyekResponseDTO = new ArrayList<ProyekResponseDTO>();
+        listProyek.forEach(proyek -> {
+            var proyekResponseDTO = proyekToProyekResponseDTO(proyek);
+            listProyekResponseDTO.add(proyekResponseDTO);
+        });
+        return listProyekResponseDTO;
     }
 
 }

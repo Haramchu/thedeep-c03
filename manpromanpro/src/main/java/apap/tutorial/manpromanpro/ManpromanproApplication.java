@@ -30,8 +30,8 @@ public class ManpromanproApplication {
 	CommandLineRunner run(ProyekService proyekService, DeveloperService developerService, PekerjaService pekerjaService) {
 		return args -> {
 			var faker = new Faker(new Locale("in-ID"));
-
-			var proyek = new Proyek();
+			for (int i = 0; i < 5; i++){
+				var proyek = new Proyek();
 			var fakeProyek = faker.leagueOfLegends();
 			var fakeDate = faker.date();
 
@@ -73,6 +73,7 @@ public class ManpromanproApplication {
             proyek.setListPekerja(listPekerja);
 
             proyekService.addProyek(proyek);
+			}
 		};
 	}
 }
