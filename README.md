@@ -14,6 +14,10 @@
 
 [Tutorial 5](#tutorial-5)
 
+[Tutorial 6](#tutorial-6)
+
+[Tutorial 7](#tutorial-7)
+
 ---
 ## Tutorial 1
 ### Apa yang telah saya pelajari hari ini
@@ -897,3 +901,245 @@ Contoh:
    Push ke dalam branch yang ingin di merge secara otomatis masuk ke dalam merge request.
 
 ---
+
+## Tutorial 6
+### Apa yang telah saya pelajari hari ini
+1. Penggunaan rebase dan reset di dalam git.
+
+### Pertanyaan
+1. **Perhatikan apa yang terjadi pada file index.html pada branch feat/tutorial-6-advancedgit-1. Apa yang terjadi setelah git cherry-pick dilakukan? Apakah kita bisa melakukan cherrypick tanpa harus melakukan commit?**
+Setelah `git cherry-pick 9b05cfd` di branch feat/tutorial-6-advancedgit-1, perubahan dari commit `9b05cfd` di branch `tut6-for-cherrypick` akan diterapkan ke `index.html` di branch `feat/tutorial-6-advancedgit-1`. Artinya, kode HTML yang ditambahkan pada commit pertama di `tut6-for-cherrypick` akan ditambahkan ke `index.html` di `feat/tutorial-6-advancedgit-1`, menghasilkan file yang sekarang berisi commit `9b05cfd`
+git cherry-pick bisa dilakukan tanpa memerlukan commit. Melalui penggunaan opsi `-n` atau `--no-commit` pada perintah git cherry-pick. Dengan opsi ini, perubahan dari commit yang di-*cherry-pick* akan diterapkan ke *working tree* dan *index*, tetapi tidak akan di-*commit* secara otomatis. Berikut adalah perintahnya:
+   ```git
+   git cherry-pick -n <commit-id>
+   ```
+   Sumber: [Git Cherry Pick Documentation](https://git-scm.com/docs/git-cherry-pick)
+
+2. **Apa yang menjadi penyebab dari CONFLICT tersebut?**
+Berdasarkan dokumentasi git, konflik berasal ketika kedua pihak membuat perubahan pada area yang sama. Git tidak bisa secara acak memilih salah satu sisi dari sisi lainnya dan meminta untuk menyelesaikannya atau *resolve conflict*. Dalam kasus ini, konflik terjadi karena kedua pihak memiliki perubahan pada bagian body di `index.html`. Pada branch `tutorial-6-advancedgit-1`, body berisi `Body from tutorial-6-advancedgit-1`. Sementara itu branch `tut6-for-merge` memiliki body yang berisi `Body from tut6-for-merge`. Hal ini menyebabkan konflik.
+Sumber: [Git Merge Documentation](https://git-scm.com/docs/git-merge)
+
+3. **Jelaskan perbedaan dari "rebase –continue", "rebase –skip", dan "rebase –abort"!**
+`--continue`
+Mulai ulang proses *rebase* setelah menyelesaikan konflik *merge*
+`--skip`
+Mulai ulang proses *rebase* dengan melewatkan patch atau commit saat ini.
+`--abort`
+Batalkan operasi *rebase* dan setel ulang HEAD ke cabang asli. Jika `<branch>` diberikan ketika operasi *rebase* dimulai, maka HEAD akan direset ke `<branch>`. Jika tidak, HEAD akan diatur ulang ke keadaan semula ketika operasi *rebase* dimulai.
+Sumber: [Git Rebase Documentation](https://git-scm.com/docs/git-rebase)
+4. **Apa perbedaan Git Merge dengan Git Rebase? Buatlah/carilah ilustrasi yang dapat menggambarkan perbedaanya! Anda bisa menggunakan commit history (git log –oneline) Anda setelah melakukan rebase.**
+#### Merge
+![merge](tutorial-6-image2.png)
+#### Rebase
+![rebase](tutorial-6-image1.png)
+#### Commit History
+![log](tutorial-6-image3.png)
+**Git Merge:**
+Git Merge akan membuat commit baru yang disebut sebagai “merge commit” yang menggabungkan kedua branch tanpa mengubah commit history dari branch mana pun. Git Merge bersifat *non-destructive*, artinya commit history dari kedua branch tetap utuh. Branch feature akan menampilkan semua commit dari branch main tanpa mengubah atau memindahkan commit yang sudah ada.
+Contoh: Commit 1f5ab89 adalah contoh merge commit. Ini menunjukkan bahwa branch rebase-2 telah digabungkan ke branch utama (dengan membuat merge commit), tanpa mengubah urutan commit yang sudah ada di kedua branch.
+
+**Git Rebase:**
+Git Rebase akan mengambil commit dari satu branch dan “memindahkannya” di atas commit terbaru dari branch target. Ini menciptakan commit baru dari setiap commit di branch sumber, yang menyebabkan tampilan history yang lebih bersih dan linear. Penggunaan rebase akan menghasilkan history dengan semua commit pada branch sumber dibuat setelah commit terbaru pada branch target.
+Contoh: Proses rebase memiliki commit 8d4b95a dan 06021f4 yang berada di atas commit dari branch rebase-1 tanpa ada merge commit. Hal ini menunjukkan bahwa rebase berhasil membuat commit yang linier tanpa perlu ada “merge commit.”
+
+Sumber: [Atlassian Merge vs Rebase](https://www.atlassian.com/git/tutorials/merging-vs-rebasing)
+
+5. **Mengapa hal pada langkah no 4 bisa terjadi? Mengapa git stash menjadi solusinya? (halaman 20)**
+Gagal pindah branch disebabkan karena adanya perubahan yang belum di-*commit*. Apabila pemindahan branch tetap dilakukan, perubahan yang sudah ada di branch awal akan di-*overwrite* oleh branch tujuan pindah. Maka dari itu, git mencegah hilangnya perubahan yang sudah kita lakukan dengan mengagalkan checkout atau pindah branch.
+`Git stash` adalah solusi dalam hal ini untuk menyimpan perubahan sementara tanpa perlu melakukan commit. 
+Perintah `git stash` akan menyimpan perubahan yang ada (baik yang sudah ditambahkan ke staging area maupun yang belum) ke dalam tumpukan (*stash stack*) yang dapat kita ambil kembali nanti. Dengan begitu, *working directory* akan menjadi bersih sehingga kita bisa berpindah branch tanpa konflik atau kehilangan perubahan. Setelah berpindah branch dan melakukan apa yang diperlukan, kita bisa mengambil kembali perubahan yang disimpan di branch awal dengan menggunakan `git stash pop`.
+Sumber: 
+[Git Checkout Documentation](https://git-scm.com/docs/git-checkout)
+[Git Stash Documentation](https://git-scm.com/docs/git-stash)
+
+6. **Sebutkan dan jelaskan tiga tipe dari Git Reset!**
+`--hard`
+Mengubah HEAD, index, dan working tree sesuai commit target. Hal ini akan menghapus semua perubahan yang ada. Mode ini berguna jika ingin membatalkan commit dan menghapus semua perubahan di dalam working tree.
+`--soft` 
+Mengubah HEAD ke commit target tetapi tidak mengubah index atau working tree. Digunakan untuk membatalkan commit namun mempertahankan perubahan sebagai staged (siap untuk di-commit ulang).
+`--mixed` (default) 
+Mengubah HEAD dan index ke commit target, namun tetap mempertahankan perubahan di working tree. Mode ini berguna jika kita ingin membatalkan commit dan perubahan staged, sehingga perubahan kembali ke status unstaged.
+Sumber: [Git Reset Documentation](https://git-scm.com/docs/git-reset)
+
+7. **Apa itu git revert? Apa perbedaannya dengan git reset?**
+`git revert`
+Membuat commit baru yang membalikkan atau membatalkan perubahan dari commit yang ditentukan. Ini menjaga log commit asli tetap utuh dan menambah commit baru di atasnya. `git revert` cocok digunakan ketika ingin membatalkan perubahan dari commit tertentu tanpa menghapus commit dari log commit.
+`git reset`
+Menghapus atau mengubah log commit. Jika menggunakan git reset --hard, perintah ini akan memindahkan posisi branch ke commit tertentu dan menghapus semua commit yang berada di antara commit tersebut dan posisi awal HEAD. Ini dapat merusak log di repositori bersama karena menghapus commit yang sudah ada di log. Digunakan ketika ingin mengatur ulang posisi branch, biasanya di lingkungan pengembangan lokal dan belum di-*push*.
+Sumber: [Git Revert Documentation](https://git-scm.com/docs/git-revert)
+
+8. **Buatlah grafik yang menggambarkan alur commit pada bagian Git Flow and Branching ini serta jelaskan! Grafik dapat berupa tulis tangan maupun menggunakan software.**
+Grafik flow, bagian atas adalah flow sebelum rebase dan bagian bawah adalah setelah rebase.
+![grafik-flow](tutorial-6-grafikflow.png)
+#### Langkah-Langkah Git Flow
+- Membuat branch `development`
+Buat branch `development` dari branch `main`:
+- Membuat direktori dan file Baru pada Branch `development` kemudian commit
+Membuat direktori baru bernama *git-flow* dan buat file base.html di branch `development`. Perubahan kemudian di-*add* dan di-*commit* dengan nama `tut6: add base.html` dan di push ke branch `development`.
+- Membuat branch `feature-a` dari branch `development`
+Membuat branch baru bernama `feature-a` dari branch `development` untuk modifikasi`base.html`. Perubahan kemudian di-*add* dan di-*commit* dengan nama `tut6: edit base.html` dan di push ke branch `feature-a`.
+- Merge branch `feature-a` ke branch `development`
+Kedua branch di-*merge* melalui gitlab sehingga branch `development` akan memiliki hasil modifikasi `base.html` yang sudah dilakukan di branch `feature-a`.
+- Membuat branch `feature-b` dari branch `development` tetapi belum pull hasil merge branch `feature-a` dan `development` di gitlab.
+Membuat branch baru bernama `feature-b` dari branch `development` untuk modifikasi`base.html`. Pembuatan branch dilakukan sebelum pull dari hasil merge branch`feature-a` ke branch `development` sehingga `base.html` di branch `feature-b` masih kosong. `base.html` kemudian dimodifikasi dan hasil modifikasi di-*add* dan di-*commit* dengan nama `tut6: edit base.html` serta di push ke branch `feature-b`.
+- Rebase branch `feature-b` dari branch d`evelopment`
+Melakukan rebase branch `feature-b` yang ternyata ada konflik akibat ada perubahan di `base.html` baik dari sisi `feature-b` maupun hasil merge `feature-a` ke `development`. Konflik diselesaikan dengan opsi *Accept Both Changes* dan di-*add* serta di-*commit* dengan nama `feat: solved conflict base.html` Rebase kemudian dilanjutkan (`--continue`) dan di push hasil rebase ke branch `feature-b`
+- Merge branch `feature-b` ke branch `development`
+Kedua branch di-*merge* melalui gitlab sehingga branch `development` akan memiliki hasil modifikasi `base.html` dari `feature-b` yang sudah di-*rebase* dengan commit dari branch `feature-a`.
+9. **Apa kegunaan dari langkah di atas?**
+**Membuat HTTP Header Manager:**
+HTTP Header Manager berfungsi untuk menambahkan atau mengelola header HTTP yang akan dikirim bersama request HTTP selama pengujian di JMeter. Dalam konteks pengujian aplikasi web atau API, header adalah bagian penting yang memberikan informasi tambahan kepada server.
+**Menambahkan Header content-type dengan Nilai application/json:**
+Header Content-Type menunjukkan kepada server format data yang dikirimkan dalam permintaan HTTP. Dengan mengatur nilai sebagai application/json, kita memberi tahu server bahwa data yang dikirimkan adalah dalam format JSON.
+Jika Content-Type tidak diatur, server mungkin tidak dapat memproses permintaan dengan benar atau bahkan bisa memberikan respons error.
+Sumber: [Blazemeter HTTP Header Manager](https://www.blazemeter.com/blog/http-header-manager)
+10. **Apa itu JSON Extractor? Sebutkan semua kegunaannya di Test Plan ini!**
+JSON Extractor adalah fitur di dalam Apache JMeter yang digunakan untuk mengekstrak nilai dari JSON response yang diterima setelah melakukan HTTP Request. JSON Extractor menggunakan JSON Path expressions untuk menemukan data spesifik dalam response dan menyimpan hasilnya dalam variabel JMeter. Variabel ini kemudian dapat digunakan dalam komponen lain di test plan, seperti Assertions atau dalam HTTP Request lainnya.
+Dalam kasus ini, JSON Extractor digunakan untuk mengambil idProyek dari proyek yang baru saja dibuat dan disimpan dalam bentuk $.data.id. idProyek nantinya akan digunakan dalam JSON Assertion untuk test *update* proyek tersebut.
+Sumber: [Blazemeter JSON Extractor](https://www.blazemeter.com/blog/json-extractor)
+11. **Apa itu Assertions dalam JMeter? Sebutkan contoh 3 Assertions dan kegunaannya!**
+Assertions dalam JMeter adalah komponen yang digunakan untuk memvalidasi respon dari server berdasarkan kriteria yang ditetapkan oleh pengguna. Assertions mengevaluasi respon dari server dan menentukan apakah hasil tes tersebut lulus atau gagal berdasarkan kondisi yang diberikan.
+Contoh Assertion:
+- Response Assertion:
+Response Assertion digunakan untuk memeriksa apakah teks respon, kode respon, atau header respon mengandung, cocok, atau sama dengan pola yang ditentukan. Misalnya, Response Assertion dapat digunakan untuk memastikan bahwa respon dari server mengandung kata tertentu atau mengembalikan kode status HTTP yang diharapkan seperti 200 OK.
+- Duration Assertion:
+Duration Assertion digunakan untuk memastikan bahwa request yang dikirim ke server diolah dalam batas waktu yang ditentukan. Jika waktu respons melebihi batas yang ditentukan, maka assertion akan gagal yang menandakan bahwa performa server mungkin tidak memadai.
+- Size Assertion:
+Size Assertion digunakan untuk memverifikasi ukuran respon dalam bytes. Ini berguna untuk memastikan bahwa ukuran respon sesuai dengan yang diharapkan, baik itu lebih besar, lebih kecil, sama dengan, atau tidak sama dengan ukuran tertentu yang ditentukan. Hal ini digunakan untuk memastikan ukuran respon yang dikirim tidak berlebih atau tidak kurang.
+Sumber: [Blazemeter JSON Assertions](https://www.blazemeter.com/blog/jmeter-assertions)
+12. **Apa itu Number of Threads dan Ramp-up Period? Apa hubungan antar keduanya?**
+**Number of Threads**
+Number of Threads merujuk pada jumlah total *virtual users* atau threads yang akan digunakan dalam pengujian. Setiap thread mewakili satu pengguna yang meniru interaksi dengan sistem atau aplikasi yang sedang diuji.
+**Ramp-up Period**
+Ramp-up Period adalah durasi waktu yang diperlukan untuk semua threads yang diatur dalam *Number of Threads* untuk diaktifkan. Misalnya, jika ada 100 threads dan ramp-up period adalah 100 detik, maka JMeter akan secara bertahap memulai masing-masing thread dalam kurun waktu tersebut, dengan kecepatan kira-kira satu thread per detik.
+**Contoh hubungan**
+Number of Threads (Pengguna): 500 
+Ramp-up Period: 100 detik 
+      - Steps: 5
+      - Setiap 20 detik (yaitu 100 detik dibagi 5 langkah), kumpulan pengguna baru akan dimulai.
+      - Setiap langkah akan memperkenalkan 100 pengguna (500 pengguna dibagi 5 langkah).
+      - Artinya JMeter memulai 5 pengguna setiap detik untuk setiap langkah karena 20 detik dibagi 100 pengguna menghasilkan 0,2 detik per pengguna.
+
+      Kombinasi antara jumlah threads dan durasi ramp-up period memungkinkan pengujian yang lebih fleksibel dan mendalam terhadap aplikasi, membantu dalam mengidentifikasi masalah performa di bawah berbagai kondisi beban. Ini juga membantu dalam mengoptimalkan sumber daya server untuk mengelola beban pengguna dalam produksi secara lebih efektif.
+Sumber: [Blazemeter Load Testing](https://loadfocus.com/docs/guides/load-testing/what-is-ramp-up-time-in-load-testing)
+13. **Gunakan angka 1000 untuk Number of Threads dan 100 untuk Ramp-up period. Jalankan Test Plan dengan konfigurasi tersebut. Kemudian, perhatikan Summary Report, View Result Tree, Graph Result, dan Assertion Result. Buatlah penjelasan minimal 2 paragraf untuk menjelaskan temuan menarik kalian terhadap hasil-hasil tersebut. Sertakan screenshot dari keempat result tersebut. Sertakan juga info mengenai prosesor, RAM, dan penggunaan hardisk HDD atau SSD dari perangkat Anda. (Jika perangkat Anda tidak kuat dengan angka konfigurasi tersebut, silakan turunkan angkanya).**
+**Laptop Specification**
+![spec](tutorial-6-image5.png)
+CPU = Ryzen 7845HX, 12 core, 24 thread, Base clock 3 GHz, Max boost clock 5.2 GHz
+SSD = 1TB, Sequential Read 4000 MB/S Sequential Write 3000 MB/S
+RAM = 16 gb, DDR 5 4800Mhz
+**Summary Report**
+![Summary-report](tutorial-6-summaryreport.png)
+***Summary Report*** menunjukkan tingkat kesuksesan dan kegagalan dari permintaan yang dikirim. Berdasarkan *summary report*, saya menemukan ada total 5000 samples atau hasil test dengan error rate sebesar 9.70%. Error rate ini terfokus pada satu test tertentu, yaitu Random Request 2206082114 dengan error rate yang signifikan sebesar 48.50% karena kesuksesan request ini adalah random. 
+Throughput juga mencapai 49.7 *requests per second* yang mengindikasikan bahwa sistem atau laptop saya mampu melakukan request dan mengirim respon dengan cukup cepat. Hal ini juga menandakan request atau respon yang diterima masih dalam skala kecil. *Received KB/sec* yang bernilai 3778.89/sec lebih tinggi dibandingkan *Send KB/sec* yang juga menunjukkan bahwa ukuran response yang diterima lebih besar dibandingkan ukuran request yang dikirim (lebih banyak GET daripada POST atau PUT).
+**View Result Tree**
+![view-result-tree](tutorial-6-viewresults.png)
+***View Results Tree*** dapat melihat detail dari setiap request yang dibuat, termasuk status sukses atau gagal. *View Result Tree* memungkinkan melihat request dan hasil response dari sistem yang sangat membantu dalam menganalisis request yang mana yang mengalami kegagalan dan memeriksa detail respons untuk menentukan penyebabnya. Dalam kasus pengerjaan tutorial, *View Result Tree* saya gunakan untuk mengetahui kesalahan pada bagian Update Proyek 2206082114 yang tidak berjalan akibat kesalahan penulisan (kurang $ di depan {idProyek}).
+**Graph Result**
+![graph-result](tutorial-6-graphresults.png)
+***Grafik*** menampilkan waktu respon terhadap waktu dimana kita bisa melihat ada peningkatan waktu respon yang konsisten dan beberapa outliers. Garis merah dan biru yang terus meningkat menunjukkan akumulasi waktu latensi seiring bertambahnya jumlah users. Ini menjadi indikasi bahwa sistem mulai terbebani seiring bertambahnya jumlah request yang dijalankan secara bersamaan. Garis hijau (*throughput*) yang relatif datar mengindikasikan throughput yang konsisten, menunjukkan bahwa meskipun ada peningkatan waktu respons, server masih mampu memproses requests dengan throughput yang stabil.
+**Assertion Result**
+![assertion-results](tutorial-6-assertionresults.png)
+***Assertion Results*** menampilkan hasil dari assertions yang dilakukan selama testing. 
+14. **Sembari menjalankan Test Plan, perhatikan pergerakan grafik pada JConsole. Buatlah penjelasan minimal 2 paragraf untuk menjelaskan temuan menarik kalian terhadap hasil-hasil tersebut. Sertakan screenshot dari grafik-grafik tersebut.**
+**JConsole**
+![jconsole](tutorial-6-image4.png)
+Dari hasil JConsole, terdapat beberapa hal menarik yang saya temukan. Pertama, ***Heap Memory Usage*** menunjukkan fluktuasi yang mencolok selama periode pengujian. Grafik menunjukkan penggunaan memori yang bergerak dari sekitar 50 MB dan mencapai hampir 100 MB pada beberapa titik waktu. Kenaikan yang cepat dan signifikan pada penggunaan memori dapat menunjukkan alokasi objek yang besar secara tiba-tiba, yang disebabkan oleh pengujian. Selain itu, pola naik turun yang terlihat menandakan aktivitas garbage collection yang terjadi, menunjukkan bahwa JVM sedang aktif dalam mengelola memori yang digunakan.
+Kedua, ***CPU Usage*** yang terlihat pada grafik cenderung sangat rendah, dengan puncak sesekali yang tidak lebih dari 0.8%. Ini mengindikasikan bahwa pengujian tidak banyak menggunakan CPU. Lonjakan pertama pada *CPU Usage* juga menunjukkan mulainya pengujian.
+Ketiga, **Classes** menunjukkan jumlah kelas yang dimuat selama periode pengujian. Lonjakan pertama pada **Classes* menunjukkan mulainya pengujian. Ini menunjukkan bahwa ada pemuatan kelas baru saat pengujian dimulai atau ada kelas yang dibuang (unloaded) dan kemudian dimuat kembali. Total kelas yang dimuat berjumlah 17,565, sementara total kelas yang di-*unload* sebesar 320.
+Terakhir, ***Thread Management*** menunjukkan jumlah thread yang stabil dengan sedikit variasi. Grafik menunjukkan jumlah thread aktif yang bertahan di sekitar angka 58 dengan puncak 59 dengan lonjakan kedua sebagai tanda awal mula pengujian. Peningkatan dan penurunan jumlah thread dalam grafik mencerminkan aktivitas sistem yang melakukan pemrosesan paralel atau *concurrent*.
+Sumber: [ITUOnline JConsole](https://www.ituonline.com/tech-definitions/what-is-jconsole/)
+
+15. **Apa itu Load Testing? Buatlah kesimpulan dari pengerjaan tutorial JMeter & JConsole ini.**
+**Load testing** adalah pengujian yang dilakukan untuk menentukan atau memvalidasi kinerja suatu aplikasi atau sistem dengan mensimulasikan jumlah pengguna yang besar (beban kerja yang besar). Tujuan dari *load testing* adalah untuk mengidentifikasi batas kapasitas aplikasi dan untuk memastikan bahwa aplikasi masih dapat beroperasi secara efisien di bawah beban kerja tinggi. Melalui JMeter, berbagai pengujian dapat dilakukan, baik dari sisi metode request, pengaturan *header*, jumlah virtualisasi *user* dan lainnya. Bersamaan dengan pengujian, JConsole juga dapat digunakan untuk memantau kinerja dari sistem untuk mengetahui apabila ada anomali dan batas dari sistem. Pengujian - pengujian ini akan membantu dalam mengidentifikasi masalah - masalah seperti kebocoran memori, batas throughput, dan kegagalan untuk diperbaiki sebelum aplikasi atau sistem diimplementasikan secara luas.
+### Apa yang belum saya pahami
+- [x] Kenapa saya menggunakan Lombok? 
+   Untuk menggunakan berbagai metode dari library Lombok tanpa harus membuat kode berlebih.
+- [ ] Cara testing?
+- [x] Apakah if else di html itu optimal?
+   Bisa, tetapi lebih baik apabila tidak ada.
+- [x] Apakah merge request harus diperbarui setiap push baru?
+   Push ke dalam branch yang ingin di merge secara otomatis masuk ke dalam merge request.
+
+## Tutorial 7
+### Apa yang telah saya pelajari hari ini
+1. Cara menghubungkan Vue js dengan SpringBoot serta cara menggunakannya.
+
+### Pertanyaan
+1. **Jelaskan apa saja maksud dari pilihan konfigurasi pada awal inisialiasi proyek vue!**
+![konfigurasi-vue](tutorial-7-image1.png)
+**Project Name**: Ini adalah nama proyek.
+**Add TypeScript**: menggunakan TypeScript atau superset dari JavaScript yang menambahkan tipe statis. TypeScript membantu dalam mengetahui kesalahan sejak awal dengan memungkinkan pemeriksaan tipe.
+**Add JSX Support**: menggunakan JSX (JavaScript XML) yang merupakan syntax tambahan yang memungkinkan menulis komponen dalam bentuk seperti syntax HTML di JavaScript (seperti React js).
+**Add Vue Router for Single Page Application development**: menggunakan Vue Router atau library bawaan Vue untuk membuat aplikasi *single-page* (SPA). Ini memungkinkan pengaturan atau *routing* tiap halaman yang bisa dilakukan dalam satu file.
+**Add Pinia for state management**: menggunakan Pinia atau *state management library* resmi untuk Vue untuk mengelola dan menyimpan data aplikasi di satu tempat yang bisa diakses oleh berbagai komponen.
+**Add Vitest for Unit Testing**: tidak menggunakan Vitest atau framework testing untuk JavaScript. Hal ini mungkin dilakukan karena tidak ada rencana pengujian vue untuk proyek.
+**Add an End-to-End Testing Solution**: tidak menambahkan alat pengujian **end-to-end** (E2E), yaitu pengujian yang melibatkan seluruh aplikasi dari awal hingga akhir. Hal ini mungkin dilakukan karena tidak ada rencana pengujian vue untuk proyek.
+**Add ESLint for code quality**: menggunakan ESLint atau alat untuk mendeteksi dan memperbaiki masalah pada kode, seperti gaya penulisan dan potensi kesalahan. Menjaga kualitas kode dengan ESLint memudahkan pemeliharaan kode dan membantu konsistensi kode antar pengembang.
+**Add Prettier for code formatting**: menggunakan Prettier atau formatter kode otomatis untuk membantu memformat kode agar lebih jelas dan mudah untuk dibaca.
+**Add Vue DevTools 7 extension for debugging (experimental)**: tidak menggunakan Vue DevTools 7 atau ekstensi untuk melihat status aplikasi Vue, state komponen, dan debugging.
+Sumber: 
+[Vue js Guide](https://vuejs.org/guide/)
+[JSX docs](https://legacy.reactjs.org/docs/introducing-jsx.html)
+[Vitest Guide](https://vitest.dev/guide/)
+[ESLint docs](https://eslint.org/docs/latest/)
+[Prettier](https://prettier.io)
+2. **Apa itu vite?**
+**Vite** adalah *build tool* yang dikembangkan oleh Evan You, pembuat Vue.js, untuk meningkatkan efisiensi pengembangan aplikasi frontend. 
+Vite memiliki dua fungsi utama:
+- Menyediakan server pengembangan yang sangat cepat dengan fitur *hot module replacement* (HMR) yang memungkinkan pengembang melihat perubahan kode secara langsung di browser tanpa memuat ulang seluruh halaman.
+- Vite melakukan bundling dan optimalisasi kode yang menghasilkan bundle yang lebih kecil untuk di-*deploy*.
+**Apakah Kita Bisa Menggunakan Vue Tanpa Vite?**
+**Ya**, Vue bisa digunakan tanpa Vite. Sebelum Vite populer, Vue biasanya dikonfigurasi menggunakan Vue CLI atau Webpack secara langsung.
+Sumber: 
+[Vue js Tooling](https://vuejs.org/guide/scaling-up/tooling)
+[Vite guide](https://vite.dev/guide/)
+3. **Jelaskan masing-masing fungsi dari assets, components, router, stores, dan view pada proyek aplikasi Vue JS!**
+**assets**
+Folder assets digunakan untuk menyimpan file static seperti gambar, icon, file CSS global, dan resource lainnya yang tidak berubah untuk diimport dan digunakan di dalam proyek. Dalam manpromanpro-frontend, assets berisi `index.css` yang berisi import style css dari Tailwind css dan `logo.svg` untuk logo.
+**components**
+Folder components berisi komponen - komponen Vue yang dapat digunakan kembali di berbagai bagian aplikasi. Komponen adalah unit kecil dari aplikasi yang memiliki logika, tampilan, dan gaya tersendiri. Komponen biasanya berbentuk file .vue yang berisi tiga bagian: template, script, dan style. Setiap komponen memiliki satu tanggung jawab tertentu, seperti Navbar, Footer, atau Button. Komponen di dalam folder ini bersifat *reusable* yang berarti dapat digunakan kembali di berbagai tempat dalam aplikasi.
+**router**
+Folder router berisi pengaturan rute (*routing*) untuk aplikasi yang menggunakan Vue Router. File dalam folder ini mendefinisikan setiap rute atau halaman, termasuk komponen mana yang akan ditampilkan untuk setiap jalur URL.
+**stores**
+Folder stores berisi *manajemen state global aplikasi* dengan menggunakan Pinia. State di dalam stores memungkinkan pengelolaan data aplikasi di satu tempat pusat sehingga lebih mudah untuk diperbarui dan diakses oleh berbagai komponen. Dalam manpromanpro-frontend, stores digunakan untuk pengolahan data untuk viewall, add, view, update, dan delete.
+**views**
+Folder views berisi halaman utama untuk rute aplikasi, seperti AboutView, HomeView, CreateProyekView, dan lainnya. Setiap file di views adalah sebuah komponen yang mewakili halaman atau tampilan secara lengkap, berbeda dengan folder components yang berisi komponen yang *reusable*, komponen di folder views biasanya hanya digunakan di satu rute tertentu. Oleh karena itu, setiap file di views umumnya dihubungkan langsung ke satu rute melalui router.
+[Vue js Guide](https://vuejs.org/guide/)
+4. **Kenapa agar Vue JS dapat mengakses REST API yang ada pada Spring Boot, kalian harus menambahkan konfigurasi CORS terlebih dahulu?**
+**Konfigurasi CORS (Cross-Origin Resource Sharing)** ditambahkan agar aplikasi Vue.js yang berjalan di `http://localhost:5173` dapat mengakses REST API yang disediakan oleh aplikasi SpringBoot dari `http://localhost:8080`. Tanpa konfigurasi ini, permintaan dari Vue.js ke REST API kemungkinan akan ditolak karena kebijakan keamanan yang diterapkan oleh browser yang disebut **Same-Origin Policy**.
+**Same-Origin Policy** adalah kebijakan keamanan pada browser yang membatasi bagaimana dokumen atau script yang dimuat dari satu origin dapat berinteraksi dengan resource dari origin lain. Secara default, browser memblokir permintaan yang berasal dari domain yang berbeda.
+**CORS** adalah mekanisme yang memungkinkan server untuk mengizinkan akses dari domain lain dengan mengatur respons HTTP tertentu. Dengan mengaktifkan CORS, server dapat mengontrol origin, metode, dan header yang diperbolehkan sehingga aplikasi web yang berjalan di domain berbeda dapat mengakses resource.
+Sumber: [SpringBoot CORS](https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html)
+5. **Jelaskan apa kegunaan interface pada typescript dan apa perbedaannya dengan types serta kapan harus menggunakan yang mana!**
+Dalam TypeScript, **interface** adalah struktur yang digunakan untuk mendefinisikan tipe khusus dengan menetapkan bentuk dan tipe dari data yang akan digunakan dalam program (semacam DTO). interface membantu dalam menjaga konsistensi struktur data, terutama dalam aplikasi berskala besar dengan banyak komponen dan tipe data yang kompleks. **interface** juga memungkinkan TypeScript memberikan saran otomatis (*autocomplete*) dan memvalidasi tipe saat coding. Misalnya jika menggunakan ProjectInterface atau ProjectRequestInterface dalam kode, editor akan membantu dengan *autocompletion* dan peringatan apabila ada kesalahan dalam penggunaan struktur data tersebut. Adanya interface juga mempermudah refactoring dan maintenance serta menghindari penggunaan tipe implicit.
+**Perbedaan antara interface dan types**
+**Extensibility**:
+interface mendukung extends secara alami sehingga mudah untuk membuat interface baru dengan mewarisi properti dari interface lain.
+type juga bisa digabungkan dengan tipe lain menggunakan intersection types (&), tetapi tidak semudah interface.
+**Declaration Merging**:
+interface mendukung *declaration merging* yang berarti jika tidak sengaja mendefinisikan dua interface dengan nama yang sama, TypeScript akan menggabungkannya.
+type tidak mendukung fitur ini sehingga jika ada dua type dengan nama yang sama, maka akan terjadi error.
+Contoh merging:
+```ts
+interface Person {
+  name: string;
+}
+interface Person {
+  age: number;
+}
+const person: Person = { name: "John", age: 30 };
+```
+**Kapan Harus Menggunakan interface atau type?**
+interface digunakan saat ingin mendefinisikan struktur untuk sebuah objek yang bisa diperluas atau digabungkan. Sementara itu, type digunakan jika membutuhkan tipe yang lebih kompleks, seperti union types atau jika tipe yang dibuat tidak perlu *extend* atau merging.
+Sumber:
+[TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/interfaces.html)
+[TypeScript Advanced Types](https://www.typescriptlang.org/docs/handbook/advanced-types.html)
+### Apa yang belum saya pahami
+- [x] Kenapa saya menggunakan Lombok? 
+   Untuk menggunakan berbagai metode dari library Lombok tanpa harus membuat kode berlebih.
+- [ ] Cara testing?
+- [x] Apakah if else di html itu optimal?
+   Bisa, tetapi lebih baik apabila tidak ada.
+- [x] Apakah merge request harus diperbarui setiap push baru?
+   Push ke dalam branch yang ingin di merge secara otomatis masuk ke dalam merge request.

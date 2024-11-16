@@ -16,5 +16,6 @@ public interface ProyekDb extends JpaRepository<Proyek, UUID> {
     List<Proyek> findAllByDeletedAtIsNull(Sort sort);
     List<Proyek> findByStatusIgnoreCaseAndDeletedAtIsNull(String status, Sort sort);
     List<Proyek> findByNamaIgnoreCaseContainingAndDeletedAtIsNull(String nama, Sort sort);
+    List<Proyek> findByNamaIgnoreCaseContainingAndDeletedAtIsNull(String nama);
     List<Proyek> findByNamaIgnoreCaseContainingAndStatusIgnoreCaseAndDeletedAtIsNull(String nama, String status, Sort sort);
 }
