@@ -49,6 +49,37 @@ public class ManpromanproApplication {
                 user.setRole(roleDb.findByRole("Admin").orElse(null));
                 userDb.save(user);
             } 
+
+			if(roleDb.findByRole("HR").orElse(null) == null) {
+                Role role = new Role();
+                role.setRole("HR");
+                roleDb.save(role);
+            }
+            UserModel user2;
+ 
+            if (userDb.findByUsername("HR") == null) {
+                user2 = new UserModel();
+                user2.setName("HR");
+                user2.setUsername("HR");
+                user2.setPassword(userService.hashPassword("HR"));
+                user2.setRole(roleDb.findByRole("HR").orElse(null));
+                userDb.save(user2);
+            } 
+			if(roleDb.findByRole("PM").orElse(null) == null) {
+                Role role = new Role();
+                role.setRole("PM");
+                roleDb.save(role);
+            }
+            UserModel user3;
+ 
+            if (userDb.findByUsername("PM") == null) {
+                user3 = new UserModel();
+                user3.setName("PM");
+                user3.setUsername("PM");
+                user3.setPassword(userService.hashPassword("PM"));
+                user3.setRole(roleDb.findByRole("PM").orElse(null));
+                userDb.save(user3);
+            } 
 			var faker = new Faker(new Locale("in-ID"));
 			for (int i = 0; i < 5; i++){
 				var proyek = new Proyek();

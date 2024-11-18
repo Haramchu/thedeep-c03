@@ -45,6 +45,8 @@ public class WebSecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/api/user/add").hasAuthority("Admin")
+                .requestMatchers("/api/developer/**", "/api/pekerja/**").hasAuthority("HR")
+                .requestMatchers("/api/proyek/**").hasAuthority("PM")
                 .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()    
             )
@@ -68,14 +70,18 @@ public class WebSecurityConfig {
                     
         return http.build();
     }
+    
 
     @Bean
-    @Order(2)
+    @Order(3)
     public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception{
         http.csrf(Customizer.withDefaults())
             .authorizeHttpRequests (requests -> requests
                 .requestMatchers (new AntPathRequestMatcher("/css/**")).permitAll() 
                 .requestMatchers (new AntPathRequestMatcher("/js/**")).permitAll()
+                .requestMatchers("/user/add").hasAuthority("Admin") 
+                .requestMatchers("/developer/**", "/pekerja/**").hasAuthority("HR") 
+                .requestMatchers("/proyek/**").hasAuthority("PM") 
                 .anyRequest().authenticated()
             )   
             .formLogin((form) -> form
@@ -83,8 +89,16 @@ public class WebSecurityConfig {
                 .permitAll()
                 .defaultSuccessUrl("/")
             )
-            .logout((logout) -> logout.logoutRequestMatcher(new AntPathRequestMatcher( "/logout")) 
-                    .logoutSuccessUrl("/login"));
+            .logout(logout -> logout
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/login")
+            )
+            .exceptionHandling(e -> e
+                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    response.sendRedirect("/response-error-authorization");
+                })
+            );
 
         return http.build();
     }
