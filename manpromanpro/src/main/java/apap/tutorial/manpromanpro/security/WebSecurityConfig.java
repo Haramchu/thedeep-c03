@@ -45,8 +45,8 @@ public class WebSecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(requests -> requests
                 .requestMatchers("/api/user/add").hasAuthority("Admin")
-                .requestMatchers("/api/developer/**", "/api/pekerja/**").hasAuthority("HR")
-                .requestMatchers("/api/proyek/**").hasAuthority("PM")
+                .requestMatchers("/api/developer/**", "/api/pekerja/**").hasAnyAuthority("Admin", "HR")
+                .requestMatchers("/api/proyek/**").hasAnyAuthority("Admin", "PM")
                 .requestMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()    
             )
@@ -80,8 +80,8 @@ public class WebSecurityConfig {
                 .requestMatchers (new AntPathRequestMatcher("/css/**")).permitAll() 
                 .requestMatchers (new AntPathRequestMatcher("/js/**")).permitAll()
                 .requestMatchers("/user/add").hasAuthority("Admin") 
-                .requestMatchers("/developer/**", "/pekerja/**").hasAuthority("HR") 
-                .requestMatchers("/proyek/**").hasAuthority("PM") 
+                .requestMatchers("/developer/**", "/pekerja/**").hasAnyAuthority("Admin", "HR") 
+                .requestMatchers("/proyek/**").hasAnyAuthority("Admin", "PM") 
                 .anyRequest().authenticated()
             )   
             .formLogin((form) -> form
