@@ -73,7 +73,7 @@ public class WebSecurityConfig {
     
 
     @Bean
-    @Order(3)
+    @Order(2)
     public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception{
         http.csrf(Customizer.withDefaults())
             .authorizeHttpRequests (requests -> requests
