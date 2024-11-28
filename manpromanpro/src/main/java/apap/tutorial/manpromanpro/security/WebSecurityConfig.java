@@ -79,6 +79,7 @@ public class WebSecurityConfig {
             .authorizeHttpRequests (requests -> requests
                 .requestMatchers (new AntPathRequestMatcher("/css/**")).permitAll() 
                 .requestMatchers (new AntPathRequestMatcher("/js/**")).permitAll()
+                .requestMatchers (new AntPathRequestMatcher("/roman/**")).permitAll()
                 .requestMatchers("/user/add").hasAuthority("Admin") 
                 .requestMatchers("/developer/**", "/pekerja/**").hasAnyAuthority("Admin", "HR") 
                 .requestMatchers("/proyek/**").hasAnyAuthority("Admin", "PM") 
