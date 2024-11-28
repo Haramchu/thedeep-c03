@@ -12,6 +12,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import apap.tutorial.manpromanpro.model.Role;
+import apap.tutorial.manpromanpro.model.UserModel;
+import apap.tutorial.manpromanpro.repository.RoleDb;
+import apap.tutorial.manpromanpro.repository.UserDb;
+import apap.tutorial.manpromanpro.restservice.UserRestService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +32,54 @@ public class ManpromanproApplication {
 
 	@Bean
 	@Transactional
-	CommandLineRunner run(ProyekService proyekService, DeveloperService developerService, PekerjaService pekerjaService) {
+	CommandLineRunner run(RoleDb roleDb, UserDb userDb, UserRestService userService, ProyekService proyekService, DeveloperService developerService, PekerjaService pekerjaService) {
 		return args -> {
+			if(roleDb.findByRole("Admin").orElse(null) == null) {
+                Role role = new Role();
+                role.setRole("Admin");
+                roleDb.save(role);
+            }
+            UserModel user;
+ 
+            if (userDb.findByUsername("admin") == null) {
+                user = new UserModel();
+                user.setName("Admin");
+                user.setUsername("admin");
+                user.setPassword(userService.hashPassword("admin"));
+                user.setRole(roleDb.findByRole("Admin").orElse(null));
+                userDb.save(user);
+            } 
+
+			if(roleDb.findByRole("HR").orElse(null) == null) {
+                Role role = new Role();
+                role.setRole("HR");
+                roleDb.save(role);
+            }
+            UserModel user2;
+ 
+            if (userDb.findByUsername("HR") == null) {
+                user2 = new UserModel();
+                user2.setName("HR");
+                user2.setUsername("HR");
+                user2.setPassword(userService.hashPassword("HR"));
+                user2.setRole(roleDb.findByRole("HR").orElse(null));
+                userDb.save(user2);
+            } 
+			if(roleDb.findByRole("PM").orElse(null) == null) {
+                Role role = new Role();
+                role.setRole("PM");
+                roleDb.save(role);
+            }
+            UserModel user3;
+ 
+            if (userDb.findByUsername("PM") == null) {
+                user3 = new UserModel();
+                user3.setName("PM");
+                user3.setUsername("PM");
+                user3.setPassword(userService.hashPassword("PM"));
+                user3.setRole(roleDb.findByRole("PM").orElse(null));
+                userDb.save(user3);
+            } 
 			var faker = new Faker(new Locale("in-ID"));
 			for (int i = 0; i < 5; i++){
 				var proyek = new Proyek();
