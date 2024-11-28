@@ -1,0 +1,122 @@
+default:
+  tags:
+    - apap
+
+.setup-ssh:
+  before_script:
+    - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+    - eval $(ssh-agent -s)
+    - echo "$DEPLOY_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+
+stages:
+  - build
+  - publish
+  - deploy
+  - clean
+
+variables:
+  IMAGE_OPENJDK_GRADLE: gradle:8.11.1-jdk21-alpine
+  IMAGE_DOCKER_DIND: docker:27.3.1-alpine3.20
+
+build-roman-converter:
+  image: $IMAGE_OPENJDK_GRADLE
+  stage: build
+  only:
+    - feat/tutorial-9-deployment
+  script:
+    - echo "Compile RomanConverter project to .jar"
+    - cd $CI_PROJECT_DIR/RomanConverter
+    - sh gradlew clean assemble
+  artifacts:
+    paths:
+      - RomanConverter/build/libs/romanconverter-0.0.1-SNAPSHOT.jar
+
+build-manpromanpro:
+  image: $IMAGE_OPENJDK_GRADLE
+  stage: build
+  only:
+    - feat/tutorial-9-deployment
+  script:
+    - echo "Compile manpromanpro project to .jar"
+    - cd $CI_PROJECT_DIR/manpromanpro
+    - sh gradlew clean assemble
+  artifacts:
+    paths:
+      - manpromanpro/build/libs/manpromanpro-0.0.1-SNAPSHOT.jar
+
+publish-roman-converter:
+  image: $IMAGE_DOCKER_DIND
+  stage: publish
+  only:
+    - feat/tutorial-9-deployment
+  dependencies:
+    - build-roman-converter
+  script:
+    - echo "Build RomanConverter image..."
+    - cd $CI_PROJECT_DIR
+    - docker build -t $IMAGE_ROMAN_CONVERTER:$CI_COMMIT_SHORT_SHA -f $CI_PROJECT_DIR/RomanConverterDockerfile .
+    - docker build -t $IMAGE_ROMAN_CONVERTER:latest -f $CI_PROJECT_DIR/RomanConverterDockerfile .
+    - echo "Publish RomanConverter image..."
+    - echo $REGISTRY_PASSWORD | docker login --username $REGISTRY_USERNAME --password-stdin $REGISTRY_SERVER
+    - docker push $IMAGE_ROMAN_CONVERTER:$CI_COMMIT_SHORT_SHA
+    - docker push $IMAGE_ROMAN_CONVERTER:latest
+
+publish-manpromanpro:
+  image: $IMAGE_DOCKER_DIND
+  stage: publish
+  only:
+    - feat/tutorial-9-deployment
+  dependencies:
+    - build-manpromanpro
+  script:
+    - echo "Build manpromanpro image..."
+    - cd $CI_PROJECT_DIR
+    - docker build -t $IMAGE_MANPROMANPRO:$CI_COMMIT_SHORT_SHA -f $CI_PROJECT_DIR/ManproManproDockerfile .
+    - docker build -t $IMAGE_MANPROMANPRO:latest -f $CI_PROJECT_DIR/ManproManproDockerfile .
+    - echo "Publish manpromanpro image..."
+    - echo $REGISTRY_PASSWORD | docker login --username $REGISTRY_USERNAME --password-stdin $REGISTRY_SERVER
+    - docker push $IMAGE_MANPROMANPRO:$CI_COMMIT_SHORT_SHA
+    - docker push $IMAGE_MANPROMANPRO:latest
+
+deployment:
+  stage: deploy
+  dependencies:
+    - publish-roman-converter
+    - publish-manpromanpro
+  only:
+    - feat/tutorial-9-deployment
+  extends: .setup-ssh
+  script:
+    - echo "Deploy to server..."
+    - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "echo ${REGISTRY_PASSWORD} | docker login --username ${REGISTRY_USERNAME} --password-stdin ${REGISTRY_SERVER}"
+    - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "mkdir -p ~/apap-cicd-069/"
+    - rsync -rahv $CI_PROJECT_DIR/docker-compose-deploy.yml "${DEPLOY_USERNAME}@${DEPLOY_SERVER}:~/apap-cicd-069/"
+    - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" 
+      "
+        export DEPLOY_UID=${DEPLOY_UID} &&
+        export IMAGE_ROMAN_CONVERTER=${IMAGE_ROMAN_CONVERTER} &&
+        export IMAGE_MANPROMANPRO=${IMAGE_MANPROMANPRO} &&
+        export PORT_ROMAN_CONVERTER=${PORT_ROMAN_CONVERTER} &&
+        export PORT_MANPROMANPRO=${PORT_MANPROMANPRO} &&
+        export DATABASE_DEV=${DATABASE_DEV} &&
+        export DATABASE_USERNAME_DEV=${DATABASE_USERNAME_DEV} &&
+        export DATABASE_PASSWORD_DEV=${DATABASE_PASSWORD_DEV} &&
+        export JWT_SECRET_KEY=${JWT_SECRET_KEY} &&
+        cd ~/apap-cicd-069/ &&
+        docker compose -f docker-compose-deploy.yml up -d --pull always        
+      "
+
+cleaning:
+  stage: clean
+  dependencies:
+    - deployment
+  only:
+    - feat/tutorial-9-deployment
+  extends: .setup-ssh
+  script:
+    - echo "Cleaning image RomanConverter and manpromanpro..."
+    - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "docker rmi \$(docker images -f 'dangling=true' -f 'reference=${IMAGE_ROMAN_CONVERTER}' -q) 2>/dev/null"
+    - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "docker rmi \$(docker images -f 'dangling=true' -f 'reference=${IMAGE_MANPROMANPRO}' -q) 2>/dev/null"
