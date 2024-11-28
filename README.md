@@ -18,6 +18,8 @@
 
 [Tutorial 7](#tutorial-7)
 
+[Tutorial 8](#tutorial-8)
+
 ---
 ## Tutorial 1
 ### Apa yang telah saya pelajari hari ini
@@ -1135,6 +1137,89 @@ interface digunakan saat ingin mendefinisikan struktur untuk sebuah objek yang b
 Sumber:
 [TypeScript Interfaces](https://www.typescriptlang.org/docs/handbook/interfaces.html)
 [TypeScript Advanced Types](https://www.typescriptlang.org/docs/handbook/advanced-types.html)
+
+## Tutorial 8
+### Apa yang telah saya pelajari hari ini
+1. Penggunaan authentication di dalam Springboot menggunakan JwtToken.
+2. Filter berdasarkan role
+
+### Pertanyaan
+1. **Apa perbedaan antara encryption dan hashing? Mana yang lebih baik untuk penyimpanan password?**
+
+| Aspek                   | Encryption                                                                                 | Hashing                                                                   |   |   |
+|-------------------------|--------------------------------------------------------------------------------------------|---------------------------------------------------------------------------|---|---|
+| Definisi                | Proses dua arah untuk mengamankan data dengan encoding (enkripsi) dan decoding (dekripsi). | Proses satu arah untuk mengubah data menjadi hash value (message digest). |   |   |
+| Tujuan                  | Menjaga kerahasiaan data.                                                                  | Menjaga integritas data.                                                  |   |   |
+| Kembalikan ke Plaintext | Bisa didekripsi kembali ke bentuk asli menggunakan kunci.                                  | Tidak bisa dikembalikan ke bentuk asli (irreversible).                    |   |   |
+| Panjang Output          | Output memiliki panjang variabel, tergantung pada algoritma dan data asli.                 | Output memiliki panjang tetap, terlepas dari panjang input.               |   |   |
+| Contoh Algoritma        | AES, RSA, Triple DES.                                                                      | MD5, SHA-256, Tiger, Whirlpool.                                           |   |   |
+| Penggunaan Umum         | Melindungi data yang ditransfer atau disimpan (misalnya, email, file, komunikasi).         | Penyimpanan password, verifikasi data, dan integritas file.               |   |   |
+
+Berdasarkan perbedaan tersebut, Hashing adalah pilihan yang lebih baik dalam menyimpan password. Hal ini dikarenakan beberapa benefit lebih yang diberikan oleh hashing, seperti keamanan satu arah dan dapat digunakan bersamaan dengan Salting.
+
+Sumber: [ClickSSL Hashing vs Encryption](https://www.clickssl.net/blog/difference-between-hashing-vs-encryption#:~:text=Hashing%20vs%20Encryption%20–%20Hashing%20refers,the%20reach%20of%20third%20parties.)
+
+2. **Apa yang membuat spring meredirect pengguna ke /login ketika pertama kali membuka localhost:8080?**
+Di dalam `WebSecurityConfig.java`, terdapat pengolahan request pengguna untuk memfilter akses halaman di dalam aplikasi. Hal ini membuat pengguna hanya dapat mengakses halaman tertentu sesuai dengan rolenya kalau sudah terautentikasi. Sebelum terauntetikasi, pengguna akan di-*redirect* ke bagian login. Berikut adalah dua kode utama yang digunakan agar pengguna *redirect* ke `/login` saat pertama kali membuka `localhost:8080`.
+```java
+.authorizeHttpRequests (requests -> requests
+      .requestMatchers (new AntPathRequestMatcher("/css/**")).permitAll() 
+      .requestMatchers (new AntPathRequestMatcher("/js/**")).permitAll()
+      .requestMatchers("/user/add").hasAuthority("Admin") 
+      .requestMatchers("/developer/**", "/pekerja/**").hasAnyAuthority("Admin", "HR") 
+      .requestMatchers("/proyek/**").hasAnyAuthority("Admin", "PM") 
+      .anyRequest().authenticated()
+) 
+```
+```java
+.formLogin((form) -> form
+      .loginPage("/login")
+      .permitAll()
+      .defaultSuccessUrl("/")
+)
+```
+Kode tersebut akan membuat user di-*redirect* ke halaman `/login` untuk autentikasi terlebih dahulu. Setelah terauntetikasi, user baru akan bisa mengakes halaman - halaman lainnya sesuai filter role.
+
+3. **Kapan method loadUserByUsername ini dipanggil?**
+Method `loadUserByUsername` ini dipanggil di `JwtTokenFilter.java` untuk mengambil detail pengguna (*role*) yang sesuai dengan nama pengguna (*username*) yang diekstrak dari token JWT. Hal ini dilakukan untuk kemudian untuk melakukan authorisasi berdasarkan role pengguna. Melalui informasi *role* yang dikembalikan method, role ini digunakan untuk menentukan apakah pengguna memiliki hak akses yang sesuai untuk endpoint tertentu.
+```java
+.requestMatchers("/api/user/add**").hasAuthority("Admin")
+```
+
+4. **Apa makna dari anotasi order serta mengapa jwtFilterChain ada di order 1 dan webFilterChain ada di order 2?**
+Anotasi `@Order` digunakan untuk menentukan prioritas eksekusi *Spring Security Filter Chains* ketika ada lebih dari satu konfigurasi filter dalam aplikasi.
+Filter dengan `@Order` bernilai lebih rendah (misalnya, 1) akan dievaluasi terlebih dahulu.
+Filter dengan `@Order` bernilai lebih tinggi (misalnya, 2, 3, dst.) akan dievaluasi setelahnya.
+**Mengapa jwtFilterChain Ada di Order 1 dan webFilterChain di Order 2?**
+- jwtFilterChain di Order 1
+jwtFilterChain menangani endpoint berbasis REST API yang dimulai dengan `/api/**`.
+Karena REST API tidak menggunakan sesi (*stateless*), filter ini perlu dievaluasi sebelum filter lain untuk memastikan bahwa semua permintaan ke `/api/**` dapat diotorisasi atau ditolak berdasarkan token JWT. Filter ini juga mengatur kebijakan `SessionCreationPolicy.STATELESS`, yang memaksa aplikasi untuk tidak menyimpan sesi pengguna.
+- webFilterChain di Order 2
+webFilterChain menangani endpoint *non-API* yang menggunakan form login dan sesi berbasis *stateful*.
+Halaman web (*non-API*) bergantung pada *session-based authentication* dan menggunakan mekanisme seperti login form (/login) dan logout (/logout). Filter ini tidak memerlukan token JWT dan dapat menggunakan autentikasi berbasis sesi yang memungkinkan pengguna tetap terautentikasi selama sesi mereka berlaku.
+Menempatkan ini di @Order(2) memastikan bahwa filter untuk REST API (jwtFilterChain) dievaluasi terlebih dahulu, sehingga endpoint /api/** tidak ditangani oleh filter berbasis sesi secara tidak sengaja.
+
+5. **Apa fungsi digunakannya method exceptionHandling pada jwtFilterChain? Jelaskan untuk masing-masing exception yang ditangani, yaitu autheticationEntryPoint dan accessDeniedHandler**
+Method `exceptionHandling` pada `jwtFilterChain` digunakan untuk menangani exception yang mungkin terjadi selama proses autentikasi atau otorisasi di Spring Security.
+- **authenticationEntryPoint**
+Exception ini terjadi ketika pengguna mencoba mengakses endpoint yang membutuhkan autentikasi tetapi pengguna tidak terautentikasi (belum login atau token JWT tidak valid).
+Apabila terjadi exception, maka kode akan mengembalikan respons HTTP dengan kode status 401 Unauthorized dengan bentuk response seperti berikut.
+```json
+{
+  "status": 401,
+  "error": "Unauthorized",
+  "message": "Full authentication is required to access this resource"
+}
+```
+- **accessDeniedHandler**
+Exception ini terjadi ketika pengguna sudah terautentikasi, tetapi tidak memiliki izin yang cukup untuk mengakses endpoint tertentu. Pengguna mengirimkan token JWT yang valid, tetapi *role* tidak sesuai dengan otoritas yang diperlukan untuk mengakses endpoint. Berikut adalah response yang diberikan apabila terjadi exception.
+```http
+HTTP/1.1 403 Forbidden
+Content-Type: text/plain
+
+Anda Tidak Memiliki Akses ke Endpoint Ini!
+```
+
 ### Apa yang belum saya pahami
 - [x] Kenapa saya menggunakan Lombok? 
    Untuk menggunakan berbagai metode dari library Lombok tanpa harus membuat kode berlebih.
