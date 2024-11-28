@@ -1,0 +1,33 @@
+services:
+  roman-converter:
+    container_name: roman_converter-${DEPLOY_UID}
+    image: ${IMAGE_ROMAN_CONVERTER}:latest
+    ports:
+      - '${PORT_ROMAN_CONVERTER}:8081'
+    restart: 'no'
+    labels:
+      uid: "${DEPLOY_UID}"
+    networks:
+      - backend-network
+  manpromanpro:
+    container_name: manpromanpro-${DEPLOY_UID}
+    image: ${IMAGE_MANPROMANPRO}:latest
+    ports:
+      - '${PORT_MANPROMANPRO}:8080'
+    restart: 'no'
+    labels:
+      uid: "${DEPLOY_UID}"
+    depends_on:
+      - roman-converter
+    networks:
+      - backend-network
+    environment:
+      - DATABASE_URL_DEV=jdbc:postgresql://db:5432/${DATABASE_DEV}
+      - DEV_USERNAME=${DATABASE_USERNAME_DEV}
+      - DEV_PASSWORD=${DATABASE_PASSWORD_DEV}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - ROMAN_API_URL=http://roman-converter:8081/api/
+networks:
+  backend-network:
+    name: apap-069_backend-network
+    external: true
