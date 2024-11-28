@@ -28,11 +28,11 @@ build-roman-converter:
     - feat/tutorial-9-deployment
   script:
     - echo "Compile RomanConverter project to .jar"
-    - cd $CI_PROJECT_DIR/RomanConverter
+    - cd $CI_PROJECT_DIR/romanconverter
     - sh gradlew clean assemble
   artifacts:
     paths:
-      - RomanConverter/build/libs/romanconverter-0.0.1-SNAPSHOT.jar
+      - romanconverter/build/libs/romanconverter-0.0.1-SNAPSHOT.jar
 
 build-manpromanpro:
   image: $IMAGE_OPENJDK_GRADLE
