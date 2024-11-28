@@ -29,5 +29,5 @@ services:
       - ROMAN_API_URL=http://roman-converter:8081/api/
 networks:
   backend-network:
-    name: apap-069_backend-framework
+    name: apap-069_backend-network
     external: true

@@ -93,7 +93,7 @@ deployment:
     - echo "Deploy to server..."
     - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "echo ${REGISTRY_PASSWORD} | docker login --username ${REGISTRY_USERNAME} --password-stdin ${REGISTRY_SERVER}"
     - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "mkdir -p ~/apap-cicd-069/"
-    - rsync -rahv $CI_PROJECT_DIR/docker-compose-deploy.yml "${DEPLOY_USERNAME}@${DEPLOY_SERVER}:~/apap-cicd-069/"
+    - rsync -rahv $CI_PROJECT_DIR/docker-compose-deploy.yaml "${DEPLOY_USERNAME}@${DEPLOY_SERVER}:~/apap-cicd-069/"
     - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" 
       "
         export DEPLOY_UID=${DEPLOY_UID} &&
@@ -106,7 +106,7 @@ deployment:
         export DATABASE_PASSWORD_DEV=${DATABASE_PASSWORD_DEV} &&
         export JWT_SECRET_KEY=${JWT_SECRET_KEY} &&
         cd ~/apap-cicd-069/ &&
-        docker compose -f docker-compose-deploy.yml up -d --pull always        
+        docker compose -f docker-compose-deploy.yaml up -d --pull always        
       "
 
 cleaning:
@@ -118,5 +118,5 @@ cleaning:
   extends: .setup-ssh
   script:
     - echo "Cleaning image RomanConverter and manpromanpro..."
-    - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "docker rmi \$(docker images -f 'dangling=true' -f 'reference=${IMAGE_ROMAN_CONVERTER}' -q) 2>/dev/null"
-    - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "docker rmi \$(docker images -f 'dangling=true' -f 'reference=${IMAGE_MANPROMANPRO}' -q) 2>/dev/null"
+    - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "docker rmi \$(docker images -f 'dangling=true' -f 'reference=${IMAGE_ROMAN_CONVERTER}' -q)"
+    - ssh "${DEPLOY_USERNAME}@${DEPLOY_SERVER}" "docker rmi \$(docker images -f 'dangling=true' -f 'reference=${IMAGE_MANPROMANPRO}' -q)"

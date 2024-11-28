@@ -22,4 +22,3 @@ networks:
   backend-network:
     name: apap-069_backend-network
     driver: bridge
-    external: true
