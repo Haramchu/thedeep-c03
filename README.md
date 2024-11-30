@@ -20,6 +20,8 @@
 
 [Tutorial 8](#tutorial-8)
 
+[Tutorial 9](#tutorial-9)
+
 ---
 ## Tutorial 1
 ### Apa yang telah saya pelajari hari ini
@@ -1219,6 +1221,230 @@ Content-Type: text/plain
 
 Anda Tidak Memiliki Akses ke Endpoint Ini!
 ```
+
+## Tutorial 9
+### Apa yang telah saya pelajari hari ini
+1. Cara deploy menggunakan docker
+
+### Pertanyaan
+**Pertanyaan 1: Jelaskan isi dari masing-masing field pada docker-compose.yml yang kamu gunakan!**
+
+`services:`
+
+- `db:`
+Nama service yang didefinisikan, dalam hal ini adalah db, yang merepresentasikan instance container untuk database PostgreSQL.
+- `container_name: db-2206082114`
+Nama container yang akan terlihat saat menjalankan perintah seperti docker ps. Penamaan ini spesifik untuk mempermudah identifikasi.
+- `image: postgres:16.4-alpine`
+Menggunakan image resmi PostgreSQL versi 16.4 berbasis alpine, yang merupakan versi ringan dari sistem operasi untuk mengurangi ukuran image.
+- `ports: 12069:5432`
+Menghubungkan port lokal 12069 (di komputer host) dengan port 5432 di dalam container (port default PostgreSQL). Ini memungkinkan mengakses database PostgreSQL melalui port 12069 dari komputer host.
+- `restart: 'no`
+Mengatur kebijakan restart container. Dalam hal ini, no berarti container tidak akan secara otomatis restart jika dihentikan.
+- `labels: uid: "2206082114"`
+Label tambahan yang disematkan pada container untuk identifikasi.
+- `environment:`
+Variabel lingkungan yang diteruskan ke container untuk mengatur konfigurasi PostgreSQL.
+- `POSTGRES_USER=postgres`
+Nama pengguna default yang akan dibuat di database PostgreSQL.
+- `POSTGRES_PASSWORD=secret99`
+Password untuk pengguna default PostgreSQL.
+- `POSTGRES_DB=manpromanpro`
+Nama database yang akan dibuat saat container pertama kali berjalan.
+- `volumes: db:/var/lib/postgresql/data:`
+Menyambungkan volume lokal (db) ke direktori var/lib/postgresql/data di dalam container. Volume ini digunakan untuk menyimpan data agar tetap persisten meskipun container dihentikan atau dihapus.
+- `networks: backend-network`
+Menyambungkan container ke jaringan Docker khusus bernama backend-network:
+- `volumes: db: driver: local`
+Membuat volume Docker bernama db dengan driver default (local) untuk penyimpanan persisten data database.
+- `networks: backend-network: name: apap-069_backend-network`
+Nama jaringan yang akan dibuat untuk menghubungkan service.
+- `networks: backend-network: driver: bridge:`
+Tipe jaringan bridge, yang merupakan default untuk komunikasi antar-container di satu host.
+
+Sumber: [Docker Reference](https://docs.docker.com/reference/compose-file/)
+
+**Pertanyaan 2: Apakah satu file Dockerfile bisa digunakan untuk melakukan build image dan container lebih dari satu service (Contohnya: satu file Dockerfile bisa melakukan build image dan container untuk ManproManpro dan RomanConverter) ? Berikan pendapatmu!**
+
+Secara umum, satu file Dockerfile sebaiknya hanya digunakan untuk satu service. Hal ini dilakukan untuk menjaga modularitas, keterbacaan, dan kemudahan pemeliharaan. Secara teknis, satu Dockerfile dapat digunakan untuk membangun image yang mencakup lebih dari satu service, tetapi hal ini memiliki beberapa keterbatasan dan tantangan. Pertama adalah keterbatasan modularitas. Menggabungkan lebih dari satu service ke dalam satu image dapat membuat konfigurasi sulit diatur, terutama jika service tersebut memiliki dependensi yang berbeda. Kedua adalah efisiensi dan ukuran image. Image yang dihasilkan cenderung menjadi lebih besar karena harus mencakup semua kebutuhan kedua service. Ini berpotensi meningkatkan waktu build dan pengunduhan. Ketiga, kesulitan pemeliharaan. Ketika salah satu service perlu diperbarui atau diganti, maka harus memodifikasi Dockerfile yang sama dan membangun ulang image untuk semua service, meskipun hanya satu yang berubah. Terakhir, tidak sesuai dengan best practice. Pendekatan ini bertentangan dengan prinsip dasar *container*, yaitu "*one container, one responsibility.*" Setiap container seharusnya menjalankan satu proses atau service untuk menjaga isolasi dan skalabilitas.
+
+Berdasarkan beberapa asalan ini, Dockerfile lebih baik dipisah untuk setiap service. Solusi yang ada sudah juga diimplementasikan di tutorial ini, yaitu menggunakan docker-compose.yml. Melalui docker-compose.yml setiap service dapat memiliki image atau *build*-nya sendiri yang didefinisikan dalam docker-compose.
+
+Sumber: [Docker Reference](https://docs.docker.com/reference/compose-file/services/)
+
+**Pertanyaan 3: Perhatikan konfigurasi untuk service ManproManpro pada Docker Compose, kamu mungkin sadar bahwa kamu menambahkan environment variable yang key-value mirip seperti pada .env, dalam hal ini jika kamu menambahkan environment pada Docker Compose dan .env dengan variable key sama namun value nya berbeda, maka value manakah yang akan digunakan? Berikan pendapatmu!**
+
+Value yang akan digunakan adalah value yang ada di dalam docker-compose.yml. Docker Compose memiliki urutan untuk menggunakan variabel yang didefinisikan langsung di dalam docker-compose.yml baru kemudian menggunakan variable yang didefinisikan di file .env (jika file ini disertakan dalam konfigurasi Docker Compose). Terakhir, apabila ada, maka akan digunakan variable yang didefinisikan di environment host tempat Docker Compose dijalankan.
+Dengan kata lain, jika terdapat konflik (key yang sama tetapi value berbeda), value yang didefinisikan langsung di dalam docker-compose.yml akan memiliki prioritas lebih tinggi.
+
+Sumber: [Docker Reference](https://docs.docker.com/reference/compose-file/)
+
+**Pertanyaan 4: Melanjutkan pertanyaan 2, pada value environment variable DATABASE_URL_DEV dan ROMAN_API_URL kamu mengubah alamat IP menjadi nama service, berikan pendapatmu mengapa kamu perlu mengubah menjadi nama service dan kapan kamu bisa menggunakan nama service sebagai pengganti alamat IP?**
+
+Alamat IP diubah menjadi nama service untuk memberikan beberapa kelebihan, seperti:
+- Dynamic IP Addressing:
+Dalam jaringan Docker, alamat IP container dapat berubah setiap kali container dihentikan dan dijalankan ulang.
+Nama service bersifat statis dan akan selalu merujuk ke container yang sesuai, terlepas dari perubahan alamat IP.
+- DNS Resolution di Docker:
+Docker secara otomatis menyediakan layanan DNS internal yang memungkinkan container saling berkomunikasi menggunakan nama service yang didefinisikan di docker-compose.yml.
+Nama service secara otomatis diterjemahkan ke alamat IP yang benar oleh jaringan Docker.
+- Kemudahan Konfigurasi:
+Menggunakan nama service membuat konfigurasi lebih readable dan mudah dimengerti dibandingkan dengan menggunakan alamat IP secara langsung.
+Nama seperti roman-converter atau db memberikan konteks yang jelas, sedangkan alamat IP bisa membingungkan.
+- Portabilitas:
+Nama service membuat konfigurasi lebih portabel. Misalnya, jika aplikasi dipindahkan ke lingkungan lain, maka tidak perlu memperbarui alamat IP selama struktur jaringan Docker tetap sama.
+- Kesesuaian dengan Konsep *Containerization*:
+*Containerization* mengedepankan isolasi dan abstraksi. Menggunakan nama service mengikuti prinsip ini dengan menghindari ketergantungan pada alamat IP yang bersifat spesifik dan berubah-ubah.
+
+Nama service sendiri dapat digunakan sebagai pengganti IP address apabila kedua container berada dalam jaringan yang sama (dalam hal ini backend-network). Apabila menggunakan jaringan internal, maka nama service juga bisa digunakan sebagai pengganti IP Address. Untuk komunikasi antar *container*, nama service dapat digunakan selama mereka berada di jaringan Docker yang sama. Selain itu, apabila jaringan tidak sama atau akses dari jaringan eksternal, maka nama service tidak bisa digunakan sebagai pengganti.
+
+Sumber: [Docker Reference](https://docs.docker.com/reference/compose-file/services/)
+
+**Pertanyaan 5: Sertakan screenshot container yang sedang berjalan (versi gui atau cli, pilih salah satu). Apa itu docker images, docker container, docker network dan docker volume?**
+![image-tutorial-9-1](tutorial-9-image1.png)
+- **Docker Images** adalah blueprint atau template yang berisi semua yang dibutuhkan untuk menjalankan aplikasi, termasuk sistem operasi, dependensi, file aplikasi, dan konfigurasi.
+Pada gambar, Image adalah tutorial-apap-2206082114-manpromanpro, tutorial-apap-2206082114-roman-converter, dan postgres:16.4-alpine.
+Image ini digunakan untuk membuat container. Image bisa dianggap seperti snapshot dari sebuah aplikasi atau lingkungan yang siap dijalankan.
+- **Docker Container** adalah instance yang berjalan berdasarkan image. Container adalah lingkungan runtime yang memanfaatkan image untuk menjalankan aplikasi.
+Contoh pada gambar:
+`manpromanpro-2206082114 (status exited)`,
+`roman_converter-2206082114 (status running)`, dan
+`db-2206082114 (status running)`
+Container dibuat dari image dan akan menjalankan aplikasi sesuai dengan konfigurasi dalam image tersebut. Container memungkinkan untuk menjalankan aplikasi di lingkungan yang terisolasi. Container juga dapat dimulai, dihentikan, dihapus, dan dibuat ulang kapan saja menggunakan command line yang disediakan docker.
+- **Docker Network** adalah mekanisme yang digunakan oleh Docker untuk mengelola komunikasi antar-container atau antara container dan host.
+Dalam gambar ini, roman_converter-2206082114 dan manpromanpro-2206082114 dapat saling berkomunikasi melalui Docker network (jaringan backend-network). Docker network memungkinkan container untuk berkomunikasi satu sama lain tanpa menggunakan IP statis dan menggunakan nama service sebagai alias DNS, misalnya db untuk database atau roman-converter untuk API lain.
+- **Docker Volume:** adalah cara Docker menyediakan penyimpanan data persisten di luar container. Volume memungkinkan data tetap ada meskipun container dihentikan atau dihapus.
+Dalam konteks PostgreSQL (seperti terlihat di gambar), volume sering digunakan untuk menyimpan data database agar tidak hilang ketika container dihentikan. Docker volume juga digunakan untuk membagi data antar-container dan membantu proses backup data yang digunakan oleh container.
+
+Sumber: [Docker Reference](https://docs.docker.com/reference/cli/docker/)
+
+**Pertanyaan 6: Apa perbedaan command “docker compose up” dengan “docker compose build”? Dan mengapa saat kamu menjalankan command “docker compose down” image yang sudah kita build atau pull masih tersimpan pada device kamu?**
+- **docker compose up** digunakan untuk menjalankan semua service yang didefinisikan di file docker-compose.yml.
+Jika image belum ada, Docker akan secara otomatis membangun (build) image sesuai dengan konfigurasi di file docker-compose.yml.
+Docker juga akan membuat container, jaringan, dan volume (jika belum ada) yang diperlukan.
+- **docker compose build** digunakan khusus untuk membangun (build) image dari Dockerfile yang didefinisikan di docker-compose.yml.
+Hanya membangun image, tanpa menjalankan container atau membuat jaringan. Biasanya digunakan saat ada perubahan pada Dockerfile atau konfigurasi build.
+
+| **Aspek**              | **docker compose up**                                     | **docker compose build**                           |
+|------------------------|-----------------------------------------------------------|----------------------------------------------------|
+| **Fungsi utama**       | Menjalankan container dari service yang didefinisikan.    | Membangun image dari Dockerfile.                   |
+| **Build Image**        | Otomatis membangun image jika belum ada.                  | Hanya membangun image tanpa menjalankan container. |
+| **Jalankan Container** | Ya, semua container dijalankan.                           | Tidak, hanya membangun image.                      |
+| **Kapan digunakan?**   | Saat ingin menjalankan aplikasi (deployment).             | Saat ada perubahan pada image atau Dockerfile.     |
+
+- **Mengapa docker compose down tidak menghapus image?**
+Fungsi docker compose down adalah menghentikan semua container yang berjalan dan menghapus container, jaringan, serta volume yang dibuat oleh Docker Compose. Perintah tersebut tidak menghapus image. Hal ini dikarenakan image bersifat independen dari container, jaringan, dan volume. Menghapus container atau jaringan tidak memengaruhi keberadaan image.  Docker menyimpan image yang telah di-pull atau di-build agar dapat digunakan kembali. Ini menghemat waktu dan bandwidth saat membangun container baru.
+
+Sumber: [Docker Reference](https://docs.docker.com/reference/cli/docker/)
+
+**Pertanyaan 7: Sertakan screenshot akses service ManproManpro pada web browser kamu. Cobalah akses https://apap-<NPM kamu>.cs.ui.ac.id/roman/convert-roman/XXMMVI di mana pada endpoint ini kita melakukan fetch API ke service RomanConverter dan sertakan screenshot-nya. Apakah saat kamu mengakses endpoint ini server bisa mengembalikan respons? Berikan alasan kamu mengapa fetch API masih bisa dilakukan meskipun service RomanConverter tidak di-expose secara publik?**
+![image-tutorial-9-2](tutorial-9-image2.png)
+Fetch API ke service RomanConverter tetap bisa dilakukan meskipun service tersebut tidak di-expose secara publik karena ManproManpro dan RomanConverter berada di jaringan Docker yang sama dan sedang berjalan, sehingga mereka dapat saling berkomunikasi menggunakan Docker internal networking yang telah dispesifikasi di file docker. Dalam file docker-compose.yml, kedua service (ManproManpro dan RomanConverter) didefinisikan berada pada jaringan Docker yang sama (backend-network). Docker juga menyediakan DNS internal sehingga nama service (roman-converter) dapat digunakan untuk berkomunikasi antar-container. Dalam hal ini, ManproManpro dapat memanggil endpoint di RomanConverter melalui URL seperti `http://roman-converter:8081/api/`. Pada project ManproManpro, terdapat mekanisme REST Controller di mana aplikasi ManproManpro menerima request dari browser dan melakukan fetch API ke RomanConverter secara internal. Browser hanya perlu mengakses service ManproManpro yang di-expose melalui port publik (misalnya, `https://apap-2206082114.cs.ui.ac.id`), sedangkan ManproManpro bertugas mem-*forward* request ke RomanConverter. Hal ini membuat service RomanConverter tidak perlu di-*expose* ke publik.
+
+**Pertanyaan 8: Apa fungsi dari SSH keys yang Anda buat dengan menggunakan ssh-keygen? Apa perbedaan antara file ~/.ssh/deployer_apap.pub dan ~/.ssh/deployer_apap ?**
+SSH keys yang dibuat menggunakan perintah ssh-keygen digunakan untuk melakukan autentikasi aman antara klien (misalnya, laptop atau server lokal) dan server tujuan melalui protokol SSH (Secure Shell). SSH keys terdiri dari pasangan kunci, *public key* dan *private key*. *Public key* ditempatkan di server tujuan untuk mengenali klien. Sementara itu, *private key* disimpan dengan aman di mesin klien dan digunakan untuk membuktikan identitas. SSH keys memungkinkan untuk masuk ke server tanpa perlu mengetik kata sandi, dengan catatan kunci publik telah disiapkan di server. Keamanan juga lebih baik dibandingkan kata sandi karena SSH keys jauh lebih sulit untuk diretas karena panjangnya biasanya 2048 atau 4096 bit. SSH Keys juga biasanya digunakan dalam deployment otomatis atau integrasi sistem tanpa perlu interaksi manual.
+Melalui SSH Keys, setiap pengguna atau perangkat dapat memiliki kunci unik, sehingga lebih mudah mengatur dan mencabut akses.
+
+**Perbedaan Antara ~/.ssh/deployer_apap.pub dan ~/.ssh/deployer_apap**
+Ketika menjalankan perintah seperti berikut untuk membuat SSH keys:
+`ssh-keygen -t rsa -b 2048 -f ~/.ssh/deployer_apap`
+akan dihasilkan dua file, yaitu:
+- `~/.ssh/deployer_apap.pub` (Public Key):
+Ini adalah kunci publik yang harus ditempatkan di server tujuan (biasanya dalam file ~/.ssh/authorized_keys).
+Fungsinya adalah untuk membiarkan server mengenali klien yang memiliki kunci privat yang cocok. File ini bersifat tidak rahasia dan dapat dibagikan secara bebas kepada server tujuan.
+- `~/.ssh/deployer_apap` (Private Key):
+Ini adalah kunci privat yang digunakan oleh klien untuk membuktikan identitasnya ke server. File ini sangat rahasia dan tidak boleh dibagikan. Jika kunci ini bocor, siapa pun bisa mengakses server Anda (jika mereka memiliki kunci publiknya). File ini digunakan oleh perintah seperti ssh atau scp untuk autentikasi.
+
+Sumber: [SSH Academy](https://www.ssh.com/academy/ssh/keygen#what-is-ssh-keygen?)
+
+**Pertanyaan 9: Mengapa kamu perlu mendefinisikan variabel? Apakah boleh kamu memasukkan secara langsung value yang sifatnya secret langsung ke .gitlab-ci.yml tanpa kamu assign dulu ke variabel?**
+
+Variabel perlu didefinisikan di gitlab untuk beberapa hal. Pertama, dengan mendefinisikan variabel di GitLab CI/CD settings, nilai yang bersifat rahasia (*secret*) seperti REGISTRY_PASSWORD atau JWT_SECRET_KEY dapat disimpan dengan aman. Nilai ini tidak akan langsung terlihat di file gitlab-ci.yml, sehingga mengurangi risiko kebocoran data sensitif. GitLab juga menyediakan opsi untuk menyembunyikan variabel ini dari log pipeline menggunakan fitur masked variables. Kedua, variabel memudahkan konfigurasi pipeline untuk berbagai lingkungan (staging maupun production) tanpa perlu mengubah file .gitlab-ci.yml. Misalnya, nilai REGISTRY_SERVER bisa berbeda untuk lingkungan staging dan production, tetapi pipeline tetap dapat menggunakan variabel yang sama. Ketiga, dengan mendefinisikan variabel di pengaturan GitLab, nilai variable dapat diolah secara terpusat. Jika ada perubahan (misalnya, REGISTRY_PASSWORD berubah), Anda hanya perlu memperbarui di satu tempat, tanpa mengubah file konfigurasi pipeline.
+
+**Apakah Boleh Memasukkan Nilai Secret Langsung ke .gitlab-ci.yml?**
+Ya, bisa langsung memasukkan nilai secret (misalnya JWT_SECRET_KEY=jwt-secret-key) ke dalam file .gitlab-ci.yml. Namun, ini sangat tidak disarankan, terutama untuk data sensitif seperti username, password, atau API key. File .gitlab-ci.yml berada di dalam repository dan berisiko terekspos jika repository diakses oleh pihak yang tidak berwenang. Jika repository diatur menjadi publik atau seseorang secara tidak sengaja membagikan file .gitlab-ci.yml, data sensitif bisa bocor. Hal ini juga tidak sesuai dengan *best practice* untuk CI/CD yang menggunakan mekanisme variabel lingkungan (environment variables) yang didefinisikan di tool CI/CD (dalam hal ini GitLab), bukan di file konfigurasi.
+
+Sumber: [Gitlab Varible Documentation](https://docs.gitlab.com/ee/ci/variables/)
+
+**Pertanyaan 10: Apa perbedaan pipeline, stage, dan job?**
+| **Aspek**        | **Pipeline**                                  | **Stage**                                       | **Job**                                             |
+| ---------------- | --------------------------------------------- | ----------------------------------------------- | --------------------------------------------------- |
+| **Definisi**     | Pipeline adalah sekumpulan stages dan jobs yang dijalankan dalam urutan tertentu untuk mengotomatisasi berbagai proses, seperti build, test, dan deployment, dalam pengembangan perangkat lunak.                   | Stage adalah tahapan atau fase dalam pipeline yang mengelompokkan beberapa jobs yang memiliki tujuan serupa (misalnya, build, test, atau deploy). | Job adalah unit terkecil dalam pipeline yang berisi perintah-perintah spesifik untuk dieksekusi. |
+| **Fungsi**       | Workflow keseluruhan CI/CD.                   | Mengelompokkan jobs berdasarkan tahapan proses. | Menjalankan tugas spesifik seperti build atau test. |
+| **Eksekusi**     | Berisi urutan eksekusi semua stages dan jobs. | Dijadwalkan secara berurutan dalam pipeline.    | Dijadwalkan paralel dalam satu stage.               |
+| **Level Detail** | Level tertinggi.                              | Level menengah, mengelompokkan jobs.            | Unit terkecil dalam pipeline.                       |
+
+Sumber: [Gitlab CI/CD Documentaion](https://docs.gitlab.com/ee/topics/build_your_application.html)
+
+**Pertanyaan 11: Jelaskan masing-masing stage beserta job yang dikerjakan pada CI/CD yang telah kamu definisikan!**
+1. **Build Stage:**
+Tahap ini bertujuan untuk mengompilasi proyek dan menghasilkan file .jar. Ada dua job dalam tahap ini:
+- build-roman-converter
+Image Docker: gradle:8.11.1-jdk21-alpine
+Langkah-langkah:
+Berpindah ke direktori proyek romanconverter.
+Menjalankan perintah gradlew clean assemble untuk membersihkan dan mengompilasi proyek.
+Artifacts:
+File .jar yang dihasilkan disimpan di:
+`romanconverter/build/libs/romanconverter-0.0.1-SNAPSHOT.jar`
+- build-manpromanpro
+Image Docker: gradle:8.11.1-jdk21-alpine
+Langkah-langkah:
+Berpindah ke direktori proyek manpromanpro.
+Menjalankan perintah gradlew clean assemble untuk membersihkan dan mengompilasi proyek.
+Artifacts:
+File .jar yang dihasilkan disimpan di:
+bash
+Copy code
+manpromanpro/build/libs/manpromanpro-0.0.1-SNAPSHOT.jar
+2. **Publish Stage:** Tahap ini bertujuan untuk membuat image Docker dari masing-masing proyek dan mengunggahnya ke Docker Registry. Ada dua job dalam tahap ini:
+- publish-roman-converter
+Image Docker: `docker:27.3.1-alpine3.20` (Docker-in-Docker).
+Langkah-langkah:
+Membuat image Docker untuk RomanConverter dengan tag commit ($CI_COMMIT_SHORT_SHA) dan latest.
+Mengunggah image ke Docker Registry:
+`$IMAGE_ROMAN_CONVERTER:$CI_COMMIT_SHORT_SHA`
+`$IMAGE_ROMAN_CONVERTER:latest.`
+- publish-manpromanpro
+Image Docker: `docker:27.3.1-alpine3.20` (Docker-in-Docker).
+Dependencies: Bergantung pada build-manpromanpro.
+Langkah-langkah:
+Membuat image Docker untuk ManproManpro dengan tag commit ($CI_COMMIT_SHORT_SHA) dan latest.
+Mengunggah image ke Docker Registry:
+`$IMAGE_MANPROMANPRO:$CI_COMMIT_SHORT_SHA`
+`$IMAGE_MANPROMANPRO:latest.`
+3. **Deploy Stage:** Tahap ini bertujuan untuk mendeploy aplikasi ke server. Terdapat satu job dalam tahap ini:
+- deployment:
+Menyiapkan akses SSH ke server tujuan menggunakan private key.
+Login ke Docker Registry dari server tujuan.
+Mengunggah file docker-compose-deploy.yaml ke server menggunakan rsync.
+Menjalankan perintah docker-compose di server untuk memulai container:
+Menarik image terbaru dari Docker Registry.
+Menjalankan container RomanConverter dan ManproManpro.
+4. Clean Stage
+Tahap ini bertujuan untuk membersihkan image Docker yang tidak lagi digunakan di server. Terdapat satu job dalam tahap ini:
+- cleaning:
+Menghapus image Docker RomanConverter yang tidak lagi digunakan (dangling images).
+Menghapus image Docker ManproManpro yang tidak lagi digunakan (dangling images).
+
+**Pertanyaan 12: Apa itu docker registry? Apakah kamu bisa me-push docker image selain ke docker registry (misalnya google container registry)?**
+Docker Registry adalah sistem penyimpanan dan distribusi untuk Docker images. Registry digunakan untuk menyimpan, mengelola, dan mendistribusikan image Docker kepada pengguna atau sistem lain. Docker Registry adalah komponen utama dalam ekosistem Docker yang memungkinkan pipeline CI/CD dan pengelolaan image secara terpusat.
+
+Image sendiri dapat dipush ke registry selain docker registry. Berikut adalah beberapa contoh registry lainnya:
+Google Container Registry (GCR): Registry dari Google Cloud Platform.
+Amazon Elastic Container Registry (ECR): Registry dari AWS.
+GitHub Container Registry: Registry dari GitHub untuk menyimpan dan mendistribusikan image.
+Sumber: [Docker Registry Documentation](https://docs.docker.com/registry/)
+
+**Pertanyaan 13:  Sertakan screenshot fullscreen saat Anda menampilkan list image dan container yang sudah kamu filter ketika sudah berhasil men-deploy aplikasi menggunakan CI/CD!**
+![image-tutorial-9-4](tutorial-9-image4.png)
+
+**Pertanyaan 14:  Sertakan screenshot fullscreen saat Anda mengakses apap-xxx.cs.ui.ac.id dan mengakses endpoint /roman/convert-roman/XXMMVI  ketika sudah berhasil men-deploy aplikasi menggunakan CI/CD!**
+![image-tutorial-9-3](tutorial-9-image3.png)
+
+**Pertanyaan 15: Apakah saat kamu mengakses endpoint yang dilakukan pada pertanyaan 14 ini server bisa mengembalikan respons? Berikan alasan kamu mengapa fetch API masih bisa dilakukan meskipun service RomanConverter tidak di-expose secara publik?**
+
+Fetch API ke service RomanConverter tetap bisa dilakukan meskipun service tersebut tidak di-expose secara publik karena ManproManpro dan RomanConverter berada di jaringan Docker yang sama dan sedang berjalan, sehingga mereka dapat saling berkomunikasi menggunakan Docker internal networking yang telah dispesifikasi di file docker. Dalam file docker-compose.yml, kedua service (ManproManpro dan RomanConverter) didefinisikan berada pada jaringan Docker yang sama (backend-network). Docker juga menyediakan DNS internal sehingga nama service (roman-converter) dapat digunakan untuk berkomunikasi antar-container. Dalam hal ini, ManproManpro dapat memanggil endpoint di RomanConverter melalui URL seperti `http://roman-converter:8081/api/`. Pada project ManproManpro, terdapat mekanisme REST Controller di mana aplikasi ManproManpro menerima request dari browser dan melakukan fetch API ke RomanConverter secara internal. Browser hanya perlu mengakses service ManproManpro yang di-expose melalui port publik (misalnya, `https://apap-2206082114.cs.ui.ac.id`), sedangkan ManproManpro bertugas mem-*forward* request ke RomanConverter. Hal ini membuat service RomanConverter tidak perlu di-*expose* ke publik.
 
 ### Apa yang belum saya pahami
 - [x] Kenapa saya menggunakan Lombok? 
