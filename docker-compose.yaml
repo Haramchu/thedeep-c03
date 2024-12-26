@@ -11,3 +11,7 @@ services:
       uid: "2206082114"
     networks:
       - backend-network
+networks:
+  backend-network:
+    name: apap-069_backend-network
+    driver: bridge
