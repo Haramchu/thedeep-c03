@@ -1,6 +1,13 @@
 services:
-volumes:
-networks:
-  backend-network:
-    name: apap-069_backend-network
-    driver: bridge
+  manpromanpro:
+    container_name: manpromanpro
+    build:
+      context: .
+      dockerfile: ManproManproDockerfile
+    ports:
+      - '11001:8081'
+    restart: 'no'
+    labels:
+      uid: "2206082114"
+    networks:
+      - backend-network
