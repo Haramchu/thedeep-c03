@@ -1,44 +1,38 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
-
+<html>
 <head>
-  <meta charset="UTF-8">
-  <object th:include="~{fragments/common :: js}" th:remove="tag"></object>
-  <object th:include="~{fragments/common :: css}" th:remove="tag"></object>
-  <title>Home</title>
+    <title>The Deep - Group Members</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #2E86C1;
+        }
+        h2 {
+            color: #117864;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #F2F3F4;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
-
 <body>
-  <nav th:replace="~{fragments/navbar :: navbar}"></nav>
-  <div class="container text-center">
-    <div class="row pt-5 pb-2">
-      <h1>
-        <i class="bi bi-kanban"></i>
-        Selamat Datang di ManproManpro!
-        <i class="bi bi-kanban"></i>
-      </h1>
-    </div>
-    <div class="row">
-      <div class="col">
-        <a type="button" class="btn btn-primary m-2" href="/proyek/add">Tambah Proyek</a>
-        <a type="button" class="btn btn-primary m-2" href="/proyek/viewall">Lihat Semua Proyek</a>
-        <a type="button" class="btn btn-primary m-2" href="/proyek/datatable">Lihat Datatable Proyek</a>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <a type="button" class="btn btn-primary m-2" href="/developer/add">Tambah Developer</a>
-        <a type="button" class="btn btn-primary m-2" href="/developer/viewall">Lihat Semua Developer</a>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <a type="button" class="btn btn-primary m-2" href="/pekerja/rest/add">Tambah Pekerja</a>
-        <a type="button" class="btn btn-primary m-2" href="/pekerja/rest/viewall">Lihat Semua Pekerja</a>
-      </div>
-    </div>
-  </div>
-  
+    <h1>SMA Kolese De Britto Yogyakarta</h1>
+    <h2>Group Participants</h2>
+    <ul>
+        <li>Clement Samuel Marly - 2206082114</li>
+        <li>Alexander Audric Johansyah - 2206815466</li>
+        <li>Yosef Nuraga Wicaksana - 2206082751</li>
+    </ul>
 </body>
-
 </html>
