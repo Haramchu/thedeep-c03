@@ -1,16 +1,4 @@
 services:
-  roman-converter:
-    container_name: roman_converter-2206082114
-    build:
-      context: .
-      dockerfile: RomanConverterDockerfile
-    ports:
-      - '11069:8081'
-    restart: 'no'
-    labels:
-      uid: "2206082114"
-    networks:
-      - backend-network
   manpromanpro:
     container_name: manpromanpro-2206082114
     build:
